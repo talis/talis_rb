@@ -1,7 +1,10 @@
+require 'httparty'
+
 module Talis
   module Authentication
     class Client
-      HOST = "https://users.talisaspire.com"
+      include HTTParty
+      debug_output $stdout
 
       attr_reader :host, :client_id, :client_secret
 
@@ -10,6 +13,7 @@ module Talis
         acquire_credentials!
 
         authenticate!
+        self
       end
 
       def authenticated?
@@ -18,11 +22,20 @@ module Talis
       private
 
       def authenticate!
-        url = "#{host}/clients/#{client_id}"
+        self.class.get("/clients/#{client_id}",
+                       :headers => {"Authorization" => bearer_token})
+      end
+
+      def bearer_token
+        "Bearer #{client_secret}"
       end
 
       def acquire_host!(opts)
-        @host = opts[:host] || HOST
+        if opts[:host].present?
+          self.class.base_uri(opts[:host])
+        else
+          self.class.base_uri("https://users.talisaspire.com")
+        end
       end
 
       def acquire_credentials!
