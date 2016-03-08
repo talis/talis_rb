@@ -4,19 +4,19 @@ module Talis
   module Authentication
     class Client
       include HTTParty
-      debug_output $stdout
-
-      attr_reader :host, :client_id, :client_secret
-
-      def initialize(opts={})
+      
+      attr_reader :host, :client_id, :client_secret, :token, :authenticated
+      def initialize(token, opts={})
+        @token = token
         acquire_host!(opts)
         acquire_credentials!
 
-        authenticate!
-        self
+        response = authenticate!
+        @authenticated = response.code == 200
       end
 
       def authenticated?
+        authenticated
       end
 
       private
@@ -27,14 +27,14 @@ module Talis
       end
 
       def bearer_token
-        "Bearer #{client_secret}"
+        "Bearer #{token}"
       end
 
       def acquire_host!(opts)
         if opts[:host].present?
           self.class.base_uri(opts[:host])
         else
-          self.class.base_uri("https://users.talisaspire.com")
+          self.class.base_uri(PERSONA_HOST)
         end
       end
 
