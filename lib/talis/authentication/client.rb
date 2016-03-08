@@ -4,19 +4,49 @@ module Talis
   module Authentication
     class Client
       include HTTParty
-      
-      attr_reader :host, :client_id, :client_secret, :token, :authenticated
+
+      attr_reader :host, :client_id, :client_secret, :token, :scopes
       def initialize(token, opts={})
         @token = token
         acquire_host!(opts)
         acquire_credentials!
 
         response = authenticate!
-        @authenticated = response.code == 200
+        body = JSON.parse response.body
+        @scopes = body["scope"]
+        raise Talis::Errors::AuthenticationFailedError unless response.code == 200
       end
 
-      def authenticated?
-        authenticated
+      def add_scope(scope)
+        if scope.kind_of? String
+          response = modify_scope(:add, scope)
+          @scopes << scope if response.code == 204
+        end
+      end
+
+      def remove_scope(scope)
+        if scope.kind_of? String
+          response = modify_scope(:remove, scope)
+          @scopes.delete(scope) if response.code == 204
+        end
+      end
+
+      def modify_scope(action, scope)
+        action = case action
+                 when :add
+                   "$add"
+                 when :remove
+                   "$remove"
+                 else
+                   raise "Unknown action"
+                 end
+        self.class.patch("/clients/#{client_id}",
+                         :headers => {
+                           'Content-Type' => 'application/json',
+                           'Authorization' => bearer_token
+                         },
+                         :body => {:scope => {action => scope}}.to_json
+                        )
       end
 
       private

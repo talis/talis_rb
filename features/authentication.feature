@@ -6,9 +6,9 @@ Feature: Authentication feature
     Then I should be authenticated
 
   Scenario: Scope Retrieval
-    Given I am authenticated as a client with the scopes of "foo, bar"
+    Given I am authenticated as a client with the scopes of "su, primate"
     When I retrieve my scopes
-    Then I should have the scopes "foo, bar"
+    Then I should have the scopes "su, primate"
 
   Scenario: Scope Addition as a superuser
     Given I am authenticated as a superuser client
