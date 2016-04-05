@@ -1,4 +1,12 @@
 language: ruby
 rvm:
-  - 2.2.1
+- 2.2.1
 before_install: gem install bundler -v 1.11.2
+notifications:
+  hipchat:
+    on_pull_requests: false
+    rooms:
+      secure: KPz9FpSupvzP2ts8BOeAp0rZe+E5VyqbfzPX5Ho46+ctj41tppO2ufYFg2eBdKpBtA1d3KqgAGZaXWtH03rq7lp9NdgTjIzt2Y1qpv3lKTKLs3BPm4JUEBLJZ9Udzatp3W+sDlF3Or8cLgsgvZ4Jx9tehI4TlI4bQn3u7Iyy38Ssgzdw13U5p7SgFnOMU3i+/L6Ki1uzB5wVi0Nvf/5f8/MVRjqXLO0HyLxUzM1g7RtWxqd3B4SzpQS1jndfXuXD0bndlOSQxODz1D6umCk0H0tGtESzMQeMZi0EiKTTTlYyJhvw9U9xZrIdz+Ecd+Sgf3N5dIzKzi6xNZm/B+YONrhvMOClgyUFk0kzOScGASlGxIlgz6uMEc9L1kGB8Y72ezEPkr5RtCjC7+MCnnJN+J2ChWiqDnTRkjshStpKRbQxRx6f3Rj7iItJcfTx1iKOxGw53xoh5OaqPVkqvbVmEMsnObg9kVFpHeTKDXzbqEuOgPmNC/9y1b32DASCU3VIISr9nN1parEthgkYuVE4s50FU2IGHBIu+1ch7J2uKg8wkYGiLxAvZlKxRl/zUCjD/XndfTWa73mY0ykN0y18TJEHgvUrFcQfveetNmMLcYF1cqXhbcCRRG2b92+2ZD9wJf2RfmSys+p33Jvu7FGtnPs1ol+a/JWg/7WVGcgoEXU=
+    template:
+    - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}"
+    notify: true
