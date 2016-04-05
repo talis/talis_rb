@@ -1,9 +1,8 @@
 require_relative '../spec_helper'
 
 describe Talis::Feed do
-
-  describe "POST /annotations" do
-    context "with a valid annotation" do
+  describe 'POST /annotations' do
+    context 'with a valid annotation' do
       before do
         @single_annotation = Talis::Feed::Annotation.create
       end
@@ -11,7 +10,8 @@ describe Talis::Feed do
       it 'should create an annotation' do
       end
 
-      context "with a further set of valid annotations with the same target URI" do
+      # rubocop:disable Metrics/LineLength
+      context 'with a further set of valid annotations with the same target URI' do
         before do
           @annotations = []
           2.times { @annotations << Talis::Feed::Annotation.create }
@@ -24,7 +24,5 @@ describe Talis::Feed do
         end
       end
     end
-
   end
-
 end

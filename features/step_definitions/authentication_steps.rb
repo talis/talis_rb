@@ -9,24 +9,26 @@ Given(/^an invalid client id and an invalid secret$/) do
 end
 
 Given(/^I am authenticated as a superuser client$/) do
-  steps "Given a valid client id and a valid secret"
-  steps "When I attempt to authenticate"
+  steps 'Given a valid client id and a valid secret'
+  steps 'When I attempt to authenticate'
 end
 
+# rubocop:disable Metrics/LineLength
 Given(/^I am authenticated as a client with the scopes of "([^"]*)"$/) do |scopes|
-  @required_scopes = scopes.split(", ")
+  @required_scopes = scopes.split(', ')
 end
 
 When(/^I attempt to authenticate$/) do
   begin
-    @talis = Talis.new(:host => "http://persona")
+    @talis = Talis.new(host: 'http://persona')
     @authenticated = true
   rescue Talis::Errors::AuthenticationFailedError
+    fail_with 'authentication failed'
   end
 end
 
 When(/^I retrieve my scopes$/) do
-  steps "When I attempt to authenticate"
+  steps 'When I attempt to authenticate'
 end
 
 When(/^I try to add the scope of "([^"]*)" to my client$/) do |scope|
@@ -38,7 +40,7 @@ Then(/^I should have the scope of "([^"]*)"$/) do |scope|
 end
 
 Then(/^I should have the scopes "([^"]*)"$/) do |scopes|
-  scopes.split(", ").each do |scope|
+  scopes.split(', ').each do |scope|
     expect(@talis.scopes).to include(scope)
   end
 end

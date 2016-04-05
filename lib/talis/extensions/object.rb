@@ -1,3 +1,4 @@
+# Helper functions for objects
 class Object
   def blank?
     subject = respond_to?(:trim) ? strip : self
