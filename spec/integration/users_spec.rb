@@ -4,6 +4,7 @@ describe Talis::User do
   describe 'POST /users' do
     context 'when valid' do
       before do
+        pending 'TODO'
         Talis::User.create
       end
 

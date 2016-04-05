@@ -4,6 +4,7 @@ describe Talis::Feed do
   describe 'POST /annotations' do
     context 'with a valid annotation' do
       before do
+        pending 'TODO'
         @single_annotation = Talis::Feed::Annotation.create
       end
 

@@ -1,4 +1,4 @@
-require 'errors/authentication_failed_error'
+require_relative 'errors/authentication_failed_error'
 
 module Talis
   # All errors will belong to this namespace.
