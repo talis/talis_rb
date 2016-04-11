@@ -7,12 +7,11 @@ require 'talis/version'
 Gem::Specification.new do |spec|
   spec.name          = 'talis'
   spec.version       = Talis::VERSION
-  spec.authors       = ['TODO: Write your name']
-  spec.email         = ['TODO: Write your email address']
+  spec.authors       = ['Omar Qureshi', 'Ben Paddock']
+  spec.email         = ['oq@talis.com', 'bp@talis.com']
 
-  spec.summary       = 'TODO: Write a short summary, because Rubygems requires one.'
-  spec.description   = 'TODO: Write a longer description or delete this line.'
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = 'Ruby client to utilise Talis primitive services'
+  spec.homepage      = 'https://github.com/talis/talis_rb'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
@@ -30,8 +29,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'uuid', '2.3.8'
   spec.add_dependency 'redis', '3.2.2' # might not be needed post JWT
   spec.add_dependency 'httparty', '0.13.7'
-  spec.add_dependency 'cucumber'
+  spec.add_dependency 'multi_json', '1.11.2'
 
+  spec.add_development_dependency 'cucumber'
   spec.add_development_dependency 'bundler', '~> 1.11'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'

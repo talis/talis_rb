@@ -11,8 +11,7 @@ require 'json'
 
 # Main entry point
 module Talis
-  # TODO: configure this
-  PERSONA_HOST = 'https://users.talisaspire.com'.freeze
+  PERSONA_HOST = 'https://users.talis.com'.freeze
 
   class << self
     def new(opts = {})
