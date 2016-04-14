@@ -27,13 +27,17 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'uuid', '2.3.8'
-  spec.add_dependency 'redis', '3.2.2' # might not be needed post JWT
+  spec.add_dependency 'jwt', '1.5.4'
+  spec.add_dependency 'activesupport', '~> 4.2.6'
   spec.add_dependency 'httparty', '0.13.7'
   spec.add_dependency 'multi_json', '1.11.2'
 
   spec.add_development_dependency 'cucumber'
   spec.add_development_dependency 'bundler', '~> 1.11'
+  spec.add_development_dependency 'guard'
+  spec.add_development_dependency 'guard-rspec'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.39.0'
+  spec.add_development_dependency 'webmock', '~> 1.24.2'
 end

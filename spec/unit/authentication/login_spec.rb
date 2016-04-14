@@ -1,6 +1,6 @@
 require 'base64'
 require 'digest'
-require_relative '../../spec_helper'
+require_relative '../spec_helper'
 
 describe Talis::Authentication::Login do
   context 'when correctly configured' do

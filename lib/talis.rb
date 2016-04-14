@@ -1,6 +1,8 @@
 require 'talis/version'
+require 'talis/constants'
 require 'talis/errors'
 require 'talis/extensions/object'
+require 'talis/helpers/http_helper'
 require 'talis/authentication'
 require 'talis/event'
 require 'talis/feed'
@@ -11,8 +13,6 @@ require 'json'
 
 # Main entry point
 module Talis
-  PERSONA_HOST = 'https://users.talis.com'.freeze
-
   class << self
     def new(opts = {})
       token = Talis::Authentication::Token.generate(opts)
