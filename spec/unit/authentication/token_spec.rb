@@ -60,7 +60,7 @@ describe Talis::Authentication::Token do
 
       token = Talis::Authentication::Token.new(options)
 
-      expect(token.validate(['abc123'])).to be_nil
+      expect(token.validate(scopes: ['abc123'])).to be_nil
     end
 
     it 'returns no error when the token contains the provided scopes' do
@@ -76,7 +76,7 @@ describe Talis::Authentication::Token do
 
       token = Talis::Authentication::Token.new(options)
 
-      expect(token.validate(['abc123', 'def:345'])).to be_nil
+      expect(token.validate(scopes: ['abc123', 'def:345'])).to be_nil
     end
 
     it 'returns no error when the token contains su scope asking for another' do
@@ -145,7 +145,7 @@ describe Talis::Authentication::Token do
 
       token = Talis::Authentication::Token.new(options)
 
-      expect(token.validate(['abc123'])).to eq :invalid_token
+      expect(token.validate(scopes: ['abc123'])).to eq :invalid_token
       true
     end
 
@@ -191,7 +191,7 @@ describe Talis::Authentication::Token do
 
       token = Talis::Authentication::Token.new(options)
 
-      expect(token.validate(['def:456'])).to eq :insufficient_scope
+      expect(token.validate(scopes: ['def:456'])).to eq :insufficient_scope
     end
 
     it 'returns scope error when the token does not have the provided scopes' do
@@ -207,7 +207,7 @@ describe Talis::Authentication::Token do
 
       token = Talis::Authentication::Token.new(options)
 
-      error = token.validate(['def:456', 'another:scope'])
+      error = token.validate(scopes: ['def:456', 'another:scope'])
       expect(error).to eq :insufficient_scope
     end
 
@@ -254,7 +254,7 @@ describe Talis::Authentication::Token do
       }
       stub_request(:get, %r{oauth/tokens}).to_return(fake_response)
 
-      expect(token.validate([required_scope])).to be_nil
+      expect(token.validate(scopes: [required_scope])).to be_nil
     end
 
     it 'raises an error when the server returns an error' do
@@ -268,14 +268,14 @@ describe Talis::Authentication::Token do
         public_key: public_key
       }
       scopes = random_scopes
-      required_scope = scopes.split(' ').first
+      required_scope = { scopes: [scopes.split(' ').first] }
 
       token = Talis::Authentication::Token.new(options)
 
       stub_request(:get, %r{oauth/tokens}).to_return(status: [503])
 
       expected_error = Talis::Errors::ServerError
-      expect { token.validate([required_scope]) }.to raise_error expected_error
+      expect { token.validate(required_scope) }.to raise_error expected_error
     end
 
     it 'returns scope error when the server returns a bad request' do
@@ -295,7 +295,7 @@ describe Talis::Authentication::Token do
 
       stub_request(:get, %r{oauth/tokens}).to_return(status: [400])
 
-      expect(token.validate([required_scope])).to be :insufficient_scope
+      expect(token.validate(scopes: [required_scope])).to be :insufficient_scope
     end
   end
 
@@ -311,13 +311,5 @@ describe Talis::Authentication::Token do
 
   def random_scopes(n = 26)
     (0..n).map { ('a'..'z').to_a.sample(5).join }.join(' ')
-  end
-
-  def client_id
-    ENV['PERSONA_OAUTH_CLIENT']
-  end
-
-  def client_secret
-    ENV['PERSONA_OAUTH_SECRET']
   end
 end

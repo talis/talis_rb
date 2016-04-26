@@ -62,12 +62,13 @@ describe Talis::Authentication::Token do
 
       expect(cache_store.fetch(cache_key)).to be_nil
 
-      generate_token
+      first_token = generate_token
 
       expect(cache_store.fetch(cache_key)).not_to be_nil
 
-      generate_token
+      second_token = generate_token
 
+      expect(first_token.to_s).to eq second_token.to_s
       expected_url = "#{persona_base_uri}/oauth/tokens"
       expect(a_request(:post, expected_url)).to have_been_made.once
     end
@@ -120,17 +121,5 @@ describe Talis::Authentication::Token do
 
   def fetch_token(token)
     Talis::Authentication::Token.fetch(token: token)
-  end
-
-  def persona_base_uri
-    ENV['PERSONA_TEST_HOST']
-  end
-
-  def client_id
-    ENV['PERSONA_OAUTH_CLIENT']
-  end
-
-  def client_secret
-    ENV['PERSONA_OAUTH_SECRET']
   end
 end

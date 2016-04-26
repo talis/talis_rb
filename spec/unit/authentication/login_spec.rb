@@ -1,16 +1,19 @@
 require 'base64'
 require 'digest'
+require 'ostruct'
 require_relative '../spec_helper'
 
 describe Talis::Authentication::Login do
+  let(:user_double) { class_double('Talis::User').as_stubbed_const }
+
   context 'when correctly configured' do
     before do
+      Talis::Authentication::Login.base_uri 'http://persona'
       options = {
         app_id: 'test-app',
         secret: 'sssh',
         provider: 'trapdoor',
-        redirect_uri: 'http://example.com',
-        base_uri: 'http://persona'
+        redirect_uri: 'http://example.com'
       }
       @login = Talis::Authentication::Login.new(options)
     end
@@ -31,6 +34,8 @@ describe Talis::Authentication::Login do
 
     context 'after a successful login' do
       it 'validates the login given a valid payload' do
+        allow(user_double).to receive(:build)
+
         options = generate_post_login_options(valid_login_data)
 
         @login.validate!(options)
@@ -40,18 +45,26 @@ describe Talis::Authentication::Login do
       end
 
       it 'returns the logged-in user' do
+        expect(user_double).to receive(:build) do |login_data|
+          # Shortcut the work Talis::Authentication::Token would do for real.
+          login_data[:token] = login_data[:access_token]
+          OpenStruct.new(login_data)
+        end
+
         options = generate_post_login_options(valid_login_data)
 
         @login.validate!(options)
 
         expect(@login.user.guid).to eq 'abc123'
-        expect(@login.user.access_token).to eq 'jwt_token'
+        expect(@login.user.token.to_s).to eq 'jwt_token'
         expect(@login.user.first_name).to eq 'Jane'
         expect(@login.user.surname).to eq 'Doe'
         expect(@login.user.email).to eq 'jane.doe@example.com'
       end
 
       it 'returns the redirect URI' do
+        allow(user_double).to receive(:build)
+
         options = generate_post_login_options(valid_login_data)
 
         @login.validate!(options)
@@ -60,6 +73,11 @@ describe Talis::Authentication::Login do
       end
 
       it 'handles bad user data with nil values' do
+        expect(user_double).to receive(:build) do |login_data|
+          guid_only = login_data.select { |key| !['guid'].include?(key) }
+          OpenStruct.new(guid_only)
+        end
+
         login_data = {
           guid: 'abc123',
           redirect: 'http://example.com'
@@ -70,7 +88,7 @@ describe Talis::Authentication::Login do
         @login.validate!(options)
 
         expect(@login.user.guid).to eq 'abc123'
-        expect(@login.user.access_token).to be_nil
+        expect(@login.user.token).to be_nil
         expect(@login.user.first_name).to be_nil
         expect(@login.user.surname).to be_nil
         expect(@login.user.email).to be_nil
@@ -78,6 +96,10 @@ describe Talis::Authentication::Login do
     end
 
     context 'after an invalid login' do
+      before do
+        expect(user_double).not_to receive(:build)
+      end
+
       it 'invalidates the login when the provided payload is not a hash' do
         options = { payload: 'invalid', state: 'not testing here' }
         @login.validate!(options)
