@@ -31,8 +31,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport', '~> 4.2.6'
   spec.add_dependency 'httparty', '0.13.7'
   spec.add_dependency 'multi_json', '1.11.2'
+  spec.add_dependency 'blueprint_ruby_client', '~> 0.1.0'
 
   spec.add_development_dependency 'cucumber'
+  spec.add_development_dependency 'dotenv'
   spec.add_development_dependency 'bundler', '~> 1.11'
   spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-rspec'

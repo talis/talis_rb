@@ -71,7 +71,7 @@ module Talis
       # @param request_id [String] ('uuid') unique ID for the remote request.
       # @param guid [String] the globally unique ID of the user to find.
       # @return [User]
-      def find(request_id: new_request_id, guid:)
+      def find(request_id: new_req_id, guid:)
         response = get("/users/#{guid}",
                        headers: {
                          'X-Request-Id' => request_id,

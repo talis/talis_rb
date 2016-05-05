@@ -1,4 +1,5 @@
 require 'httparty'
+require 'ostruct'
 require 'securerandom'
 
 module Talis
@@ -24,7 +25,7 @@ module Talis
         end
       end
 
-      def new_request_id
+      def new_req_id
         SecureRandom.hex(13)
       end
 
@@ -32,11 +33,14 @@ module Talis
 
       def build_client_error(response)
         raise Talis::Errors::NotFoundError if response.code == 404
-        error_description = safe_error_description(response.parsed_response)
+        error_description = safe_error_description(response)
         raise Talis::Errors::ClientError, error_description
       end
 
-      def safe_error_description(parsed_response)
+      def safe_error_description(response)
+        if response.respond_to? :parsed_response
+          parsed_response = response.parsed_response
+        end
         parsed_response['error_description'] if parsed_response.present?
       end
     end

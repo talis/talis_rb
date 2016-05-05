@@ -45,7 +45,7 @@ module Talis
       # @raise [Talis::Errors::ServerError] if the sever cannot validate the
       #   scope.
       # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-      def validate(request_id: self.class.new_request_id, scopes: [])
+      def validate(request_id: self.class.new_req_id, scopes: [])
         decoded = JWT.decode(@jwt, p_key(request_id), true, algorithm: 'RS256')
         validate_scopes(request_id, scopes, decoded[0])
       rescue JWT::ExpiredSignature
@@ -116,7 +116,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the generation failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def generate(request_id: new_request_id, client_id:, client_secret:)
+        def generate(request_id: new_req_id, client_id:, client_secret:)
           token = cached_token(client_id, client_secret)
           if token.nil?
             generate_remote_token(request_id, client_id, client_secret)
@@ -143,7 +143,7 @@ module Talis
           access_token = data['access_token']
           # Expire the cache slightly before the token expires to cater for
           # communication delay between server issuing and client receiving.
-          expiry_time = data['expires_in'] - 5.seconds
+          expiry_time = data['expires_in'].to_i - 5.seconds
           Token.cache_store.write(digest_data(client_id, client_secret),
                                   access_token, expires_in: expiry_time)
         end

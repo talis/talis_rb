@@ -1,3 +1,6 @@
+require 'dotenv'
+Dotenv.load
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'talis'
 require 'webmock/rspec'
@@ -14,6 +17,10 @@ end
 
 def client_secret
   ENV['PERSONA_OAUTH_SECRET']
+end
+
+def blueprint_base_uri
+  ENV['BLUEPRINT_TEST_HOST']
 end
 
 RSpec.configure do |config|
