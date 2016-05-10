@@ -132,7 +132,7 @@ module Talis
       private
 
       def build_user(data)
-        profile = data.fetch('profile', {})
+        profile = data['profile'] || {}
         Talis::User.build(guid: data['guid'],
                           first_name: profile['first_name'],
                           surname: profile['surname'],
