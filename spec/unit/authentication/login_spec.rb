@@ -44,6 +44,20 @@ describe Talis::Authentication::Login do
         expect(@login.error).to be_nil
       end
 
+      it 'validates the login give a payload with an empty profile' do
+        allow(user_double).to receive(:build)
+
+        data = valid_login_data
+        data[:profile] = nil
+
+        options = generate_post_login_options(data)
+
+        @login.validate!(options)
+
+        expect(@login.valid?).to be true
+        expect(@login.error).to be_nil
+      end
+
       it 'returns the logged-in user' do
         expect(user_double).to receive(:build) do |login_data|
           # Shortcut the work Talis::Authentication::Token would do for real.
