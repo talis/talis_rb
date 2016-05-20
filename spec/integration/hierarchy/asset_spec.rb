@@ -3,10 +3,11 @@ require 'securerandom'
 require_relative '../spec_helper'
 
 describe Talis::Hierarchy::Asset do
+  let(:namespace) { 'rubytest' }
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
-    Talis::Hierarchy::Asset.client_id = client_id
-    Talis::Hierarchy::Asset.client_secret = client_secret
+    Talis::Authentication.client_id = client_id
+    Talis::Authentication.client_secret = client_secret
     Talis::Hierarchy::Asset.base_uri(blueprint_base_uri)
 
     setup_node_data
@@ -15,7 +16,7 @@ describe Talis::Hierarchy::Asset do
 
   context 'retrieving assets' do
     it 'returns a single asset' do
-      asset = Talis::Hierarchy::Asset.get(namespace: 'rubytest',
+      asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                           type: 'textbook',
                                           id: '0123456789'
                                          )
@@ -25,7 +26,7 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'returns nil when the asset is not found' do
-      asset = Talis::Hierarchy::Asset.get(namespace: 'rubytest',
+      asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                           type: 'textbook',
                                           id: 'notfound'
                                          )
@@ -39,7 +40,7 @@ describe Talis::Hierarchy::Asset do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'textbook',
         id: '0123456789'
       }
@@ -54,7 +55,7 @@ describe Talis::Hierarchy::Asset do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'textbook',
         id: '0123456789'
       }
@@ -67,7 +68,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Hierarchy::Asset.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'textbook',
         id: '0123456789'
       }
@@ -77,11 +78,11 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Asset.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Asset.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'textbook',
         id: '0123456789'
       }
@@ -92,12 +93,12 @@ describe Talis::Hierarchy::Asset do
     end
   end
 
-  context 'searching assets' do
-    it 'returns all assets when no options are given' do
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'xyz'
-                                           )
+  context 'searching assets by node' do
+    it 'returns all assets belonging to a node when no options are given' do
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'xyz'
+                                                   )
       asset = assets.last
 
       expect(assets.size).to eq 5
@@ -106,10 +107,10 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'returns an empty array when no assets are found' do
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'notfound'
-                                           )
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'notfound'
+                                                   )
 
       expect(assets).to eq []
     end
@@ -120,13 +121,13 @@ describe Talis::Hierarchy::Asset do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'module',
         id: 'xyz'
       }
       error = Talis::Errors::ClientError
 
-      expect { Talis::Hierarchy::Asset.find(opts) }.to raise_error error
+      expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -135,52 +136,53 @@ describe Talis::Hierarchy::Asset do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'module',
         id: 'xyz'
       }
       error = Talis::Errors::ServerError
 
-      expect { Talis::Hierarchy::Asset.find(opts) }.to raise_error error
+      expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
 
     it 'raises an error when there is a problem talking to the server' do
       Talis::Hierarchy::Asset.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'module',
         id: 'xyz'
       }
       error = Talis::Errors::ServerCommunicationError
 
-      expect { Talis::Hierarchy::Asset.find(opts) }.to raise_error error
+      expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Asset.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Asset.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'module',
         id: 'xyz'
       }
-      error = Talis::Errors::ClientError
+      err = Talis::Errors::ClientError
       msg = 'The client credentials are invalid'
 
-      expect { Talis::Hierarchy::Asset.find(opts) }.to raise_error error, msg
+      expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error err,
+                                                                           msg
     end
 
     it 'can filter assets by the given property' do
       opts = {
-        filter_asset_type: 'digitisation'
+        filter_asset_type: ['digitisation']
       }
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'xyz',
-                                            opts: opts
-                                           )
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'xyz',
+                                                    opts: opts
+                                                   )
 
       expect(assets.size).to eq 3
       assets.each do |asset|
@@ -192,11 +194,11 @@ describe Talis::Hierarchy::Asset do
       opts = {
         limit: 1
       }
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'xyz',
-                                            opts: opts
-                                           )
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'xyz',
+                                                    opts: opts
+                                                   )
 
       expect(assets.size).to eq 1
     end
@@ -205,11 +207,11 @@ describe Talis::Hierarchy::Asset do
       opts = {
         offset: 1
       }
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'xyz',
-                                            opts: opts
-                                           )
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'xyz',
+                                                    opts: opts
+                                                   )
       asset = assets.first
 
       expect(asset.id).to eq '123'
@@ -218,18 +220,158 @@ describe Talis::Hierarchy::Asset do
 
     it 'can apply multiple search options' do
       opts = {
-        filter_asset_type: 'digitisation',
+        filter_asset_type: ['digitisation'],
         offset: 1
       }
-      assets = Talis::Hierarchy::Asset.find(namespace: 'rubytest',
-                                            type: 'module',
-                                            id: 'xyz',
-                                            opts: opts
-                                           )
+      assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                    type: 'module',
+                                                    id: 'xyz',
+                                                    opts: opts
+                                                   )
       asset = assets.first
 
       expect(asset.id).to eq '456'
       expect(asset.type).to eq 'digitisation'
+    end
+  end
+
+  context 'creating assets' do
+    let(:asset) do
+      node = OpenStruct.new(id: 'xyz', type: 'module')
+      options = {
+        namespace: namespace,
+        type: 'note',
+        id: '999',
+        node: node
+      }
+      Talis::Hierarchy::Asset.new(options)
+    end
+
+    it 'saves a valid asset' do
+      expected_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'note',
+                                                   id: '999'
+                                                  )
+      expect(expected_asset).to be_nil
+
+      asset.save
+
+      created_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'note',
+                                                  id: '999'
+                                                 )
+
+      expect(created_asset.id).to eq '999'
+      expect(created_asset.type).to eq 'note'
+    end
+
+    it 'raises an error when the server responds with a client error' do
+      stub_request(:put, %r{1/rubytest/nodes/module/xyz/assets/note/999})
+        .to_return(status: [400])
+
+      expect { asset.save }.to raise_error Talis::Errors::ClientError
+    end
+
+    it 'raises an error when the server responds with a server error' do
+      stub_request(:put, %r{1/rubytest/nodes/module/xyz/assets/note/999})
+        .to_return(status: [500])
+
+      expect { asset.save }.to raise_error Talis::Errors::ServerError
+    end
+
+    it 'raises an error when there is a problem talking to the server' do
+      Talis::Hierarchy::Asset.base_uri('http://foo')
+      expected_error = Talis::Errors::ServerCommunicationError
+
+      expect { asset.save }.to raise_error expected_error
+    end
+
+    it 'raises an error when the client credentials are invalid' do
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
+      message = 'The client credentials are invalid'
+
+      expect { asset.save }.to raise_error Talis::Errors::ClientError, message
+    end
+  end
+
+  context 'updating assets' do
+    let(:asset) do
+      node = OpenStruct.new(id: 'xyz', type: 'module')
+      options = {
+        namespace: namespace,
+        type: 'note',
+        id: '999',
+        node: node
+      }
+      Talis::Hierarchy::Asset.new(options)
+    end
+
+    it 'should update a valid asset' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'note',
+                                                   id: '999'
+                                                  )
+      expect(existing_asset.attributes).to eq({})
+
+      existing_asset.attributes = { test: 'attribute' }
+      existing_asset.update
+
+      updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'note',
+                                                  id: '999'
+                                                 )
+      expect(updated_asset.attributes[:test]).to eq 'attribute'
+    end
+
+    it 'should update a valid asset without attributes' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'note',
+                                                   id: '999'
+                                                  )
+      expect(existing_asset.attributes).to eq({})
+
+      existing_asset.type = 'list'
+      existing_asset.update
+
+      updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'list',
+                                                  id: '999'
+                                                 )
+      expect(updated_asset).not_to be_nil
+    end
+
+    it 'raises an error when the server responds with a client error' do
+      stub_request(:put, %r{1/rubytest/assets/note/999}).to_return(
+        status: [400]
+      )
+
+      expect { asset.update }.to raise_error Talis::Errors::ClientError
+    end
+
+    it 'raises an error when the server responds with a server error' do
+      stub_request(:put, %r{1/rubytest/assets/note/999}).to_return(
+        status: [500]
+      )
+
+      expect { asset.update }.to raise_error Talis::Errors::ServerError
+    end
+
+    it 'raises an error when there is a problem talking to the server' do
+      Talis::Hierarchy::Asset.base_uri('http://foo')
+      expected_error = Talis::Errors::ServerCommunicationError
+
+      expect { asset.update }.to raise_error expected_error
+    end
+
+    it 'raises an error when the client credentials are invalid' do
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
+      message = 'The client credentials are invalid'
+
+      expect { asset.update }.to raise_error Talis::Errors::ClientError, message
     end
   end
 
@@ -241,7 +383,8 @@ describe Talis::Hierarchy::Asset do
       '123' => 'digitisation',
       '456' => 'digitisation',
       '789' => 'digitisation',
-      '0123456789' => 'textbook'
+      '0123456789' => 'textbook',
+      '999' => 'note'
     }
   end
 
@@ -249,13 +392,13 @@ describe Talis::Hierarchy::Asset do
     assets_api_client = Talis::Hierarchy::Asset.api_client
     assets.each do |id, type|
       begin
-        assets_api_client.remove_asset_from_node('rubytest', 'module', 'xyz',
-                                                 type, id)
+        assets_api_client.delete_asset(namespace, id, type)
       rescue BlueprintClient::ApiError => error
         # Asset probably didn't exist, this is OK
-        puts "could not remove asset #{type}/#{id} from node: #{error.inspect}"
+        puts "could not remove asset #{type}/#{id}: #{error.inspect}"
       end
-      assets_api_client.add_asset_to_node('rubytest', 'module', 'xyz', type, id)
+      assets_api_client.add_asset_to_node(namespace, 'module', 'xyz', type, id)
+      assets_api_client.delete_asset(namespace, '999', 'note')
     end
   end
 
@@ -263,8 +406,8 @@ describe Talis::Hierarchy::Asset do
     fixtures_dir = File.expand_path('../../fixtures', __FILE__)
     remove_hierarchy = File.read("#{fixtures_dir}/remove_asset_hierarchy.csv")
     add_hierarchy = File.read("#{fixtures_dir}/add_asset_hierarchy.csv")
-    node_bulk_upload('rubytest', remove_hierarchy)
-    node_bulk_upload('rubytest', add_hierarchy)
+    node_bulk_upload(namespace, remove_hierarchy)
+    node_bulk_upload(namespace, add_hierarchy)
   end
 
   def token

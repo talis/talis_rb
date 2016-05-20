@@ -3,8 +3,8 @@ require_relative '../spec_helper'
 describe Talis::Hierarchy::Node do
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
-    Talis::Hierarchy::Node.client_id = client_id
-    Talis::Hierarchy::Node.client_secret = client_secret
+    Talis::Authentication.client_id = client_id
+    Talis::Authentication.client_secret = client_secret
     Talis::Hierarchy::Node.base_uri(blueprint_base_uri)
 
     setup_node_data
@@ -78,8 +78,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest',
@@ -148,8 +148,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest'
@@ -162,7 +162,7 @@ describe Talis::Hierarchy::Node do
 
     it 'can filter nodes by the given property' do
       opts = {
-        filter_node_type: 'course'
+        filter_node_type: ['course']
       }
       nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
 
@@ -197,7 +197,7 @@ describe Talis::Hierarchy::Node do
 
     it 'can apply multiple search options' do
       opts = {
-        filter_node_type: 'course',
+        filter_node_type: ['course'],
         offset: 1
       }
       nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
@@ -284,8 +284,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest',
@@ -389,8 +389,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest',
@@ -497,8 +497,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest',
@@ -601,8 +601,8 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the client credentials are invalid' do
-      Talis::Hierarchy::Node.client_id = 'ruby-client-test'
-      Talis::Hierarchy::Node.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
         namespace: 'rubytest',

@@ -17,11 +17,6 @@ module Talis
     #   with other Talis primitive services.
     attr_reader :token
 
-    # The ID of the OAuth client that can make requests for user resources.
-    cattr_accessor :client_id
-    # The secret of the OAuth client that can make requests for user resources.
-    cattr_accessor :client_secret
-
     private_class_method :new
 
     # Creates a new user object. For internal use only, use {User.build}.
@@ -62,11 +57,11 @@ module Talis
 
     class << self
       # Find a single user given the search criterion.
-      # In order to perform this search, the class must be configured with a
+      # In order to perform this search, the client must be configured with a
       # valid OAuth client that is allowed to search for users:
       #
-      #  Talis::User.client_id = 'client_id'
-      #  Talis::User.client_secret = 'client_secret'
+      #  Talis::Authentication.client_id = 'client_id'
+      #  Talis::Authentication.client_secret = 'client_secret'
       #
       # @param request_id [String] ('uuid') unique ID for the remote request.
       # @param guid [String] the globally unique ID of the user to find.
@@ -112,14 +107,6 @@ module Talis
           surname: profile['surname'],
           email: profile['email']
         }
-      end
-
-      def token
-        options = {
-          client_id: User.client_id,
-          client_secret: User.client_secret
-        }
-        Talis::Authentication::Token.generate(options)
       end
     end
   end

@@ -5,38 +5,139 @@ module Talis
     # Represents hierarchy asset API operations provided by the Blueprint gem:
     # {https://github.com/talis/blueprint_rb}
     #
-    # In order to perform remote operations, the class must be configured with a
-    # valid OAuth client that is allowed to query assets:
+    # In order to perform remote operations, the client must be configured
+    # with a valid OAuth client that is allowed to query assets:
     #
-    #  Talis::Hierarchy::Asset.client_id = 'client_id'
-    #  Talis::Hierarchy::Asset.client_secret = 'client_secret'
+    #  Talis::Authentication.client_id = 'client_id'
+    #  Talis::Authentication.client_secret = 'client_secret'
     #
+    # @example Create an asset with attributes.
+    #  node_options = {
+    #    namespace: 'mynamespace',
+    #    type: 'module',
+    #    id: '1'
+    #  }
+    #  node = Talis::Hierarchy::Node.get(node_options)
+    #  asset_options = {
+    #    namespace: 'mynamespace',
+    #    type: 'list',
+    #    id: '1',
+    #    node: node
+    #  }
+    #  asset = Talis::Hierarchy::Asset.new(asset_options)
+    #  asset.save # Will raise an exception if this fails
+    #  asset.attributes = { attr_key: 'my_attr_value' }
+    #  asset.update
+    # @example Create an asset and associate it with multiple nodes.
+    #  node1_options = {
+    #    namespace: 'mynamespace',
+    #    type: 'module',
+    #    id: '1'
+    #  }
+    #  node2_options = {
+    #    namespace: 'mynamespace',
+    #    type: 'module',
+    #    id: '2'
+    #  }
+    #  node1 = Talis::Hierarchy::Node.get(node1_options)
+    #  node2 = Talis::Hierarchy::Node.get(node2_options)
+    #  asset_options = {
+    #    namespace: 'mynamespace',
+    #    type: 'list',
+    #    id: '1',
+    #    node: node
+    #  }
+    #  asset = Talis::Hierarchy::Asset.new(asset_options)
+    #  asset.save
+    #  # Associates the asset with an additional node
+    #  asset.node = node2
+    #  asset.save
     class Asset < Talis::Resource
       base_uri Talis::BLUEPRINT_HOST
 
-      # The ID of the OAuth client to allow requests for asset resources.
-      cattr_accessor :client_id
-      # The secret of the OAuth client to allow requests for asset resources.
-      cattr_accessor :client_secret
+      # @return [String] The hierarchy namespace.
+      attr_accessor :namespace
+      # @return [String] The ID of the asset.
+      attr_accessor :id
+      # @return [String] The type of asset.
+      attr_accessor :type
+      # @return [BlueprintClient::Node] A node an asset can belong to.
+      #   Note that an asset can belong to multiple nodes (see examples).
+      attr_accessor :node
+      # @return [Hash] key-value pair attributes belonging to the asset.
+      attr_accessor :attributes
+
+      # Create a non-persisted asset.
+      # @param namespace [String] the namespace of the hierarchy.
+      # @param type [String] the type of asset.
+      # @param id [String] the ID of the asset.
+      # @param node [BlueprintClient::Node] a node an asset can belong to.
+      #   Note that an asset can belong to multiple nodes (see examples).
+      # @param attributes [Hash]({}) key-value pair attributes belonging to the
+      #   asset.
+      def initialize(namespace:, type:, id:, node: nil, attributes: {})
+        @namespace = namespace
+        @id = id
+        @type = type
+        @node = node
+        @attributes = attributes
+      end
+
+      # Persist the asset to the hierarchy.
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      # @return [Array<BlueprintClient::Asset>] the created asset.
+      # @raise [Talis::Errors::ClientError] if the request was invalid.
+      # @raise [Talis::Errors::ServerError] if the save failed on the
+      #   server.
+      # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+      def save(request_id: self.class.new_req_id)
+        self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                            @node.type,
+                                                            @node.id,
+                                                            @type,
+                                                            @id)
+      rescue BlueprintClient::ApiError => error
+        self.class.handle_response(error)
+      end
+
+      # Update an existing asset.
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      # @raise [Talis::Errors::ClientError] if the request was invalid.
+      # @raise [Talis::Errors::ServerError] if the update failed on the
+      #   server.
+      # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+      def update(request_id: self.class.new_req_id)
+        body = BlueprintClient::AssetBody.new(data: {
+                                                id: @id,
+                                                type: @type,
+                                                attributes: @attributes
+                                              })
+        self.class.api_client(request_id).replace_asset(@namespace, @id, @type,
+                                                        body: body)
+      rescue BlueprintClient::ApiError => error
+        self.class.handle_response(error)
+      end
 
       # rubocop:disable Metrics/LineLength
       class << self
-        # Search for assets in the hierarchy for the given namespace.
+        # Search for assets in the hierarchy for the given namespace and node.
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param namespace [String] the namespace of the hierarchy.
         # @param type [String] the type of node the assets belong to.
         # @param id [String] the ID of the node the assets belong to.
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/AssetsApi.md#get_assets_in_node}
-        # @return [Array<BlueprintClient::Asset>] or an empty array if no
+        # @return [Array<Talis::Hierarchy::Asset>] or an empty array if no
         #   assets are found.
         # @raise [Talis::Errors::ClientError] if the request was invalid.
         # @raise [Talis::Errors::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def find(request_id: new_req_id, namespace:, type:, id:, opts:{})
-          api_client(request_id).get_assets_in_node(namespace, type, id, opts)
-                                .data
+        def find_by_node(request_id: new_req_id, namespace:, type:, id:, opts:{})
+          assets = []
+          data = api_client(request_id).get_assets_in_node(namespace, type,
+                                                           id, opts).data
+          data.each { |asset| assets << build(asset, namespace) }
         rescue BlueprintClient::ApiError => error
           begin
             handle_response(error)
@@ -50,13 +151,14 @@ module Talis
         # @param namespace [String] the namespace of the hierarchy.
         # @param type [String] the type of asset to fetch.
         # @param id [String] the ID of the asset to fetch.
-        # @return BlueprintClient::Asset or nil if the asset cannot be found.
+        # @return Talis::Hierarchy::Asset or nil if the asset cannot be found.
         # @raise [Talis::Errors::ClientError] if the request was invalid.
         # @raise [Talis::Errors::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def get(request_id: new_req_id, namespace:, type:, id:)
-          api_client(request_id).get_asset(namespace, type, id).data
+          data = api_client(request_id).get_asset(namespace, type, id).data
+          build(data, namespace)
         rescue BlueprintClient::ApiError => error
           begin
             handle_response(error)
@@ -83,20 +185,17 @@ module Talis
 
         private
 
+        def build(data, namespace)
+          new(namespace: namespace, type: data.type, id: data.id,
+              attributes: data.attributes ? data.attributes : {})
+        end
+
         def configure_blueprint
           BlueprintClient.configure do |config|
             config.scheme = base_uri[/https?/]
             config.host = base_uri
             config.access_token = token
           end
-        end
-
-        def token
-          options = {
-            client_id: Asset.client_id,
-            client_secret: Asset.client_secret
-          }
-          Talis::Authentication::Token.generate(options)
         end
       end
     end

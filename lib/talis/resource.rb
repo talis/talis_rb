@@ -29,6 +29,16 @@ module Talis
         SecureRandom.hex(13)
       end
 
+      protected
+
+      def token
+        options = {
+          client_id: Talis::Authentication.client_id,
+          client_secret: Talis::Authentication.client_secret
+        }
+        Talis::Authentication::Token.generate(options)
+      end
+
       private
 
       def build_client_error(response)

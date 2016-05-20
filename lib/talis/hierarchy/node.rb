@@ -5,19 +5,14 @@ module Talis
     # Represents hierarchy node API operations provided by the Blueprint gem:
     # {https://github.com/talis/blueprint_rb}
     #
-    # In order to perform remote operations, the class must be configured with a
-    # valid OAuth client that is allowed to query nodes:
+    # In order to perform remote operations, the client must be configured
+    # with a valid OAuth client that is allowed to query nodes:
     #
-    #  Talis::Hierarchy::Node.client_id = 'client_id'
-    #  Talis::Hierarchy::Node.client_secret = 'client_secret'
+    #  Talis::Authentication.client_id = 'client_id'
+    #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Node < Talis::Resource
       base_uri Talis::BLUEPRINT_HOST
-
-      # The ID of the OAuth client to allow requests for node resources.
-      cattr_accessor :client_id
-      # The secret of the OAuth client to allow requests for node resources.
-      cattr_accessor :client_secret
 
       # rubocop:disable Metrics/LineLength
       class << self
@@ -164,14 +159,6 @@ module Talis
             config.host = base_uri
             config.access_token = token
           end
-        end
-
-        def token
-          options = {
-            client_id: Node.client_id,
-            client_secret: Node.client_secret
-          }
-          Talis::Authentication::Token.generate(options)
         end
       end
     end

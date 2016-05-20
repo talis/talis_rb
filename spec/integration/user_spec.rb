@@ -6,8 +6,8 @@ describe Talis::User do
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::User.base_uri(persona_base_uri)
-    Talis::User.client_id = client_id
-    Talis::User.client_secret = client_secret
+    Talis::Authentication.client_id = client_id
+    Talis::Authentication.client_secret = client_secret
   end
 
   context 'finding users' do
@@ -32,8 +32,8 @@ describe Talis::User do
     end
 
     it 'raises an error for all other error cases' do
-      Talis::User.client_id = 'ruby-client-test'
-      Talis::User.client_secret = 'ruby-client-test'
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
 
       expected_error = Talis::Errors::ClientError
       msg = 'The client credentials are invalid'

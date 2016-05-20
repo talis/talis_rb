@@ -26,7 +26,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Security Configuration
+
+Many client operations require an OAuth token. 
+In order to carry out these operations, configure the OAuth client:
+
+    require 'talis/authentication'
+
+    Talis::Authentication.client_id = 'client_id'
+    Talis::Authentication.client_secret = 'client_secret'
+
+See the code for each class for specific usage:
+* `lib/talis/authentication/login.rb` For server-side login workflow.
+* `lib/talis/authentication/token.rb` For OAuth token generation and validation.
+* `lib/talis/hierarchy/node.rb` For managing hierarchies.
+* `lib/talis/hierarchy/asset.rb` For managing hierarchy assets.
+* `lib/talis/user.rb` For managing Talis users.
 
 ## Development
 
