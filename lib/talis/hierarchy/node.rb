@@ -21,14 +21,19 @@ module Talis
         # @param namespace [String] the namespace of the hierarchy.
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#search_nodes}
-        # @return [Array<BlueprintClient::Node>] or an empty array if no
-        #   nodes are found.
+        # @return [Hash] containing data and meta attributes. The structure
+        #   as follows:
+        #     {
+        #       data: [node1, node2, node3, node4, node5],
+        #       meta: { offset: 0, count: 20, limit: 5 }
+        #     }
+        #  where nodes are of type BlueprintClient::Node
         # @raise [Talis::Errors::ClientError] if the request was invalid.
         # @raise [Talis::Errors::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, namespace:, opts:{})
-          api_client(request_id).search_nodes(namespace, opts).data
+          api_client(request_id).search_nodes(namespace, opts)
         rescue BlueprintClient::ApiError => error
           handle_response(error)
         end

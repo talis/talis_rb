@@ -1,6 +1,7 @@
 require_relative '../spec_helper'
 
 describe Talis::Hierarchy::Node do
+  let(:namespace) { 'rubytest' }
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::Authentication.client_id = client_id
@@ -12,7 +13,7 @@ describe Talis::Hierarchy::Node do
 
   context 'retrieving nodes' do
     it 'returns a single node' do
-      node = Talis::Hierarchy::Node.get(namespace: 'rubytest',
+      node = Talis::Hierarchy::Node.get(namespace: namespace,
                                         type: 'college',
                                         id: 'abc'
                                        )
@@ -40,7 +41,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -55,7 +56,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -68,7 +69,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -82,7 +83,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -96,7 +97,7 @@ describe Talis::Hierarchy::Node do
 
   context 'searching nodes' do
     it 'returns all nodes when no options are given' do
-      nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest')
+      nodes = Talis::Hierarchy::Node.find(namespace: namespace).data
       node = nodes.first
 
       expect(nodes.size).to eq 5
@@ -109,7 +110,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'returns an empty array when no nodes are found' do
-      nodes = Talis::Hierarchy::Node.find(namespace: 'notfound')
+      nodes = Talis::Hierarchy::Node.find(namespace: 'notfound').data
 
       expect(nodes).to eq []
     end
@@ -118,7 +119,7 @@ describe Talis::Hierarchy::Node do
       stub_request(:get, %r{1/rubytest/nodes}).to_return(status: [400])
 
       opts = {
-        namespace: 'rubytest'
+        namespace: namespace
       }
       expected_error = Talis::Errors::ClientError
 
@@ -129,7 +130,7 @@ describe Talis::Hierarchy::Node do
       stub_request(:get, %r{1/rubytest/nodes}).to_return(status: [500])
 
       opts = {
-        namespace: 'rubytest'
+        namespace: namespace
       }
       expected_error = Talis::Errors::ServerError
 
@@ -140,7 +141,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest'
+        namespace: namespace
       }
       expected_error = Talis::Errors::ServerCommunicationError
 
@@ -152,7 +153,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest'
+        namespace: namespace
       }
       error = Talis::Errors::ClientError
       msg = 'The client credentials are invalid'
@@ -164,7 +165,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         filter_node_type: ['course']
       }
-      nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
+      nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
 
       expect(nodes.size).to eq 2
       nodes.each do |node|
@@ -176,7 +177,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         limit: 1
       }
-      nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
+      nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
 
       expect(nodes.size).to eq 1
     end
@@ -185,7 +186,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         offset: 1
       }
-      nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
+      nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
       node = nodes.first
 
       expect(node.id).to eq 'lmnop'
@@ -200,7 +201,7 @@ describe Talis::Hierarchy::Node do
         filter_node_type: ['course'],
         offset: 1
       }
-      nodes = Talis::Hierarchy::Node.find(namespace: 'rubytest', opts: opts)
+      nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
       node = nodes.first
 
       expect(node.id).to eq 'qr'
@@ -217,7 +218,7 @@ describe Talis::Hierarchy::Node do
 
   context 'retrieving children from a node' do
     it 'returns all children' do
-      children = Talis::Hierarchy::Node.children(namespace: 'rubytest',
+      children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'college',
                                                  id: 'abc'
                                                 )
@@ -232,7 +233,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'returns an empty array when no children are found' do
-      children = Talis::Hierarchy::Node.children(namespace: 'rubytest',
+      children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'module',
                                                  id: 'xyz'
                                                 )
@@ -246,7 +247,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -261,7 +262,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -274,7 +275,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -288,7 +289,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -305,7 +306,7 @@ describe Talis::Hierarchy::Node do
         offset: 1
       }
 
-      children = Talis::Hierarchy::Node.children(namespace: 'rubytest',
+      children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'department',
                                                  id: 'lmnop',
                                                  opts: opts
@@ -323,7 +324,7 @@ describe Talis::Hierarchy::Node do
 
   context 'retrieving parents from a node' do
     it 'returns all parents' do
-      parents = Talis::Hierarchy::Node.parents(namespace: 'rubytest',
+      parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'department',
                                                id: 'lmnop'
                                               )
@@ -339,7 +340,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'returns an empty array when no parents are found' do
-      parents = Talis::Hierarchy::Node.parents(namespace: 'rubytest',
+      parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'college',
                                                id: 'abc'
                                               )
@@ -352,7 +353,7 @@ describe Talis::Hierarchy::Node do
         .to_return(status: [400])
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'department',
         id: 'lmnop'
       }
@@ -366,7 +367,7 @@ describe Talis::Hierarchy::Node do
         .to_return(status: [500])
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'department',
         id: 'lmnop'
       }
@@ -379,7 +380,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'department',
         id: 'lmnop'
       }
@@ -393,7 +394,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'department',
         id: 'lmnop'
       }
@@ -410,7 +411,7 @@ describe Talis::Hierarchy::Node do
         offset: 0
       }
 
-      parents = Talis::Hierarchy::Node.parents(namespace: 'rubytest',
+      parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'department',
                                                id: 'lmnop',
                                                opts: opts
@@ -429,7 +430,7 @@ describe Talis::Hierarchy::Node do
 
   context 'retrieving ancestors from a node' do
     it 'returns all ancestors' do
-      ancestors = Talis::Hierarchy::Node.ancestors(namespace: 'rubytest',
+      ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'course',
                                                    id: 'stuv'
                                                   )
@@ -445,7 +446,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'returns an empty array when no ancestors are found' do
-      ancestors = Talis::Hierarchy::Node.ancestors(namespace: 'rubytest',
+      ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'college',
                                                    id: 'abc'
                                                   )
@@ -459,7 +460,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'course',
         id: 'stuv'
       }
@@ -474,7 +475,7 @@ describe Talis::Hierarchy::Node do
       )
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'course',
         id: 'stuv'
       }
@@ -487,7 +488,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'course',
         id: 'stuv'
       }
@@ -501,7 +502,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'course',
         id: 'stuv'
       }
@@ -518,7 +519,7 @@ describe Talis::Hierarchy::Node do
         offset: 1
       }
 
-      ancestors = Talis::Hierarchy::Node.ancestors(namespace: 'rubytest',
+      ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'course',
                                                    id: 'stuv',
                                                    opts: opts
@@ -536,7 +537,7 @@ describe Talis::Hierarchy::Node do
 
   context 'retrieving descendants from a node' do
     it 'returns all descendants' do
-      descendants = Talis::Hierarchy::Node.descendants(namespace: 'rubytest',
+      descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'department',
                                                        id: 'lmnop'
                                                       )
@@ -551,7 +552,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'returns an empty array when no descendants are found' do
-      descendants = Talis::Hierarchy::Node.descendants(namespace: 'rubytest',
+      descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'module',
                                                        id: 'xyz'
                                                       )
@@ -564,7 +565,7 @@ describe Talis::Hierarchy::Node do
         .to_return(status: [400])
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -578,7 +579,7 @@ describe Talis::Hierarchy::Node do
         .to_return(status: [500])
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -591,7 +592,7 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -605,7 +606,7 @@ describe Talis::Hierarchy::Node do
       Talis::Authentication.client_secret = 'ruby-client-test'
 
       opts = {
-        namespace: 'rubytest',
+        namespace: namespace,
         type: 'college',
         id: 'abc'
       }
@@ -622,7 +623,7 @@ describe Talis::Hierarchy::Node do
         offset: 1
       }
 
-      descendants = Talis::Hierarchy::Node.descendants(namespace: 'rubytest',
+      descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'department',
                                                        id: 'lmnop',
                                                        opts: opts
