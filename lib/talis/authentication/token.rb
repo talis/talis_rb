@@ -41,13 +41,16 @@ module Talis
       # @param request_id [String] (uuid) unique ID for the remote request.
       # @param scopes [Array] Scope(s) that the token needs in order to be
       #   valid.
+      # @param all [Boolean] (true) Whether or not all scopes must be present
+      #   within the token for validation to pass. If false, only one matching
+      #   scope is required.
       # @return [Symbol, Nil] nil iff the token is valid else a symbol error.
       # @raise [Talis::Errors::ServerError] if the sever cannot validate the
       #   scope.
       # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-      def validate(request_id: self.class.new_req_id, scopes: [])
+      def validate(request_id: self.class.new_req_id, scopes: [], all: true)
         decoded = JWT.decode(@jwt, p_key(request_id), true, algorithm: 'RS256')
-        validate_scopes(request_id, scopes, decoded[0])
+        validate_scopes(request_id, scopes, decoded[0], all)
       rescue JWT::ExpiredSignature
         return :expired_token
       rescue JWT::VerificationError, JWT::DecodeError
@@ -79,7 +82,7 @@ module Talis
         OpenSSL::PKey.read(public_key)
       end
 
-      def validate_scopes(request_id, wanted_scopes, token)
+      def validate_scopes(request_id, wanted_scopes, token, all_must_match)
         # The existence of this key means there are too many scopes to fit
         # into an encoded token, it must be fetched from the server
         token = fetch_token(request_id) if token.key? 'scopeCount'
@@ -88,8 +91,13 @@ module Talis
         provided_scopes = token['scopes']
         return nil if wanted_scopes.empty?
         return nil if provided_scopes.include? 'su'
-        # This operation returns the intersect of the array
-        if (wanted_scopes & provided_scopes) != wanted_scopes
+        compare_scope_intersect(wanted_scopes, provided_scopes, all_must_match)
+      end
+
+      def compare_scope_intersect(wanted_scope, provided_scope, all_must_match)
+        intersect_scope = (wanted_scope & provided_scope)
+        if (all_must_match && intersect_scope != wanted_scope) ||
+           intersect_scope.empty?
           :insufficient_scope
         end
       end

@@ -63,7 +63,7 @@ describe Talis::Authentication::Token do
       expect(token.validate(scopes: ['abc123'])).to be_nil
     end
 
-    it 'returns no error when the token contains the provided scopes' do
+    it 'returns no error when the token contains all of the provided scopes' do
       payload = {
         exp: Time.now.to_i + 60,
         scopes: ['abc123', 'def:345']
@@ -77,6 +77,23 @@ describe Talis::Authentication::Token do
       token = Talis::Authentication::Token.new(options)
 
       expect(token.validate(scopes: ['abc123', 'def:345'])).to be_nil
+    end
+
+    it 'returns no error when the token contains one of the provided scopes' do
+      payload = {
+        exp: Time.now.to_i + 60,
+        scopes: ['abc123', 'def:345']
+      }
+      jwt = JWT.encode(payload, private_key, 'RS256')
+      options = {
+        jwt: jwt,
+        public_key: public_key
+      }
+
+      token = Talis::Authentication::Token.new(options)
+      result = token.validate(scopes: ['abc123', 'another:scope'], all: false)
+
+      expect(result).to be_nil
     end
 
     it 'returns no error when the token contains su scope asking for another' do
@@ -194,7 +211,7 @@ describe Talis::Authentication::Token do
       expect(token.validate(scopes: ['def:456'])).to eq :insufficient_scope
     end
 
-    it 'returns scope error when the token does not have the provided scopes' do
+    it 'returns an error when token doesn`t have all of the provided scopes' do
       payload = {
         exp: Time.now.to_i + 60,
         scopes: ['abc123', 'def:456']
@@ -208,6 +225,23 @@ describe Talis::Authentication::Token do
       token = Talis::Authentication::Token.new(options)
 
       error = token.validate(scopes: ['def:456', 'another:scope'])
+      expect(error).to eq :insufficient_scope
+    end
+
+    it 'returns an error when token doesn`t have any of the provided scopes' do
+      payload = {
+        exp: Time.now.to_i + 60,
+        scopes: ['abc123', 'def:456']
+      }
+      jwt = JWT.encode(payload, private_key, 'RS256')
+      options = {
+        jwt: jwt,
+        public_key: public_key
+      }
+
+      token = Talis::Authentication::Token.new(options)
+
+      error = token.validate(scopes: ['ghi:789', 'another:scope'], all: false)
       expect(error).to eq :insufficient_scope
     end
 
