@@ -1,6 +1,7 @@
 # Talis Ruby Client
 
 [![Build Status](https://travis-ci.org/talis/talis_rb.svg?branch=master)](https://travis-ci.org/talis/talis_rb)
+[![Dependency Status](https://dependencyci.com/github/talis/talis_rb/badge)](https://dependencyci.com/github/talis/talis_rb)
 
 A ruby gem that provides interactions with Talis primitives.
 
