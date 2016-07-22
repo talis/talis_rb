@@ -70,14 +70,19 @@ module Talis
       # Use this URL to redirect the user wishing to login to their auth
       # provider. After generating the URL the state will be available to
       # store in a session.
+      # @param require [Symbol] (nil) If :profile, upon successful
+      #   login, the user will be redirected to a profile form if they do not
+      #   have one.
       # @return [String] the generated URL.
-      def generate_url
+      def generate_url(require: nil)
         @state = Digest::MD5.hexdigest("#{@app}::#{@uuid.generate}")
-        params = URI.encode_www_form(
+        params = {
           app: @app,
           state: @state,
           redirectUri: @redirect_uri
-        )
+        }
+        params = params.merge(require: 'profile') if require == :profile
+        params = params.to_query
         "#{self.class.base_uri}/auth/providers/#{@provider}/login?#{params}"
       end
 

@@ -22,9 +22,18 @@ describe Talis::Authentication::Login do
       it 'returns the correct login URL for the given provider and app' do
         expected_url = %r{
           http:\/\/persona\/auth\/providers\/trapdoor\/login
-          \?app=test-app&state=.*&redirectUri=http%3A%2F%2Fexample\.com
+          \?app=test-app&redirectUri=http%3A%2F%2Fexample\.com&state=.*
         }x
         expect(@login.generate_url).to match expected_url
+      end
+
+      it 'returns the correct login URL when a user profile is required' do
+        expected_url = %r{
+          http:\/\/persona\/auth\/providers\/trapdoor\/login
+          \?app=test-app&redirectUri=http%3A%2F%2Fexample\.com
+          &require=profile&state=.*
+        }x
+        expect(@login.generate_url(require: :profile)).to match expected_url
       end
 
       it 'returns the redirect URI' do
