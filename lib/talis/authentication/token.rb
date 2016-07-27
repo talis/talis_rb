@@ -117,6 +117,7 @@ module Talis
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param client_id [String] the client for whom this token is for.
         # @param client_secret [String] secret belonging to the client.
+        # @param host [String] Optional persona host override for service
         # @return [Talis::Authentication::Token] the generated or cached token.
         # @raise [Talis::Errors::ClientError] if the client ID/secret are
         #   invalid.
