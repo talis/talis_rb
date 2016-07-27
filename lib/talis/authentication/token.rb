@@ -124,11 +124,11 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the generation failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def generate(request_id: new_req_id, client_id:, client_secret:, host: nil)
-          token = cached_token(client_id, client_secret, host || base_uri)
+        def generate(request_id: new_req_id, client_id:, client_secret:,
+            host: base_uri)
+          token = cached_token(client_id, client_secret, host)
           if token.nil?
-            generate_remote_token(request_id, client_id, client_secret,
-                                  host || base_uri)
+            generate_remote_token(request_id, client_id, client_secret, host)
           else
             new(jwt: token)
           end
