@@ -8,8 +8,8 @@ module Talis
     # Overrides Talis::Resource.token
     def token
       options = {
-          client_id: client_id || Talis::Authentication.client_id,
-          client_secret: client_secret || Talis::Authentication.client_secret
+        client_id: client_id || Talis::Authentication.client_id,
+        client_secret: client_secret || Talis::Authentication.client_secret
       }
       options[:host] = oauth_host if oauth_host
       Talis::Authentication::Token.generate(options)
