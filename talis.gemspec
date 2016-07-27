@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'httparty', '0.13.7'
   spec.add_dependency 'multi_json', '1.11.2'
   spec.add_dependency 'blueprint_ruby_client', '~> 0.4.1'
+  spec.add_dependency 'metatron_ruby_client', '~> 0.0.1'
 
   spec.add_development_dependency 'cucumber'
   spec.add_development_dependency 'dotenv'

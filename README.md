@@ -43,6 +43,7 @@ See the code for each class for specific usage:
 * `lib/talis/hierarchy/node.rb` For managing hierarchies.
 * `lib/talis/hierarchy/asset.rb` For managing hierarchy assets.
 * `lib/talis/user.rb` For managing Talis users.
+* `lib/talis/bibliography/work.rb` For querying works.
 
 ## Development
 

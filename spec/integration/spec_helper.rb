@@ -8,19 +8,23 @@ require 'webmock/rspec'
 WebMock.allow_net_connect!
 
 def persona_base_uri
-  ENV['PERSONA_TEST_HOST']
+  ENV.fetch('PERSONA_TEST_HOST', Talis::PERSONA_HOST)
 end
 
 def client_id
-  ENV['PERSONA_OAUTH_CLIENT']
+  ENV.fetch('PERSONA_OAUTH_CLIENT')
 end
 
 def client_secret
-  ENV['PERSONA_OAUTH_SECRET']
+  ENV.fetch('PERSONA_OAUTH_SECRET')
 end
 
 def blueprint_base_uri
-  ENV['BLUEPRINT_TEST_HOST']
+  ENV.fetch('BLUEPRINT_TEST_HOST', Talis::BLUEPRINT_HOST)
+end
+
+def metatron_base_uri
+  ENV.fetch('METATRON_TEST_HOST', Talis::METATRON_HOST)
 end
 
 RSpec.configure do |config|
