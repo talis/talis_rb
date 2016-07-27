@@ -13,7 +13,7 @@ module Talis
     #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Work < Talis::Resource
-      extend Forwardable
+      extend Forwardable, Talis::OAuthService
       base_uri Talis::METATRON_HOST
       attr_reader :manifestations, :assets, :work_data
       attr_accessor :id, :type, :title

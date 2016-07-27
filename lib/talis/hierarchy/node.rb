@@ -12,6 +12,8 @@ module Talis
     #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Node < Talis::Resource
+      extend Talis::OAuthService
+
       base_uri Talis::BLUEPRINT_HOST
 
       # rubocop:disable Metrics/LineLength

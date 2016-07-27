@@ -7,7 +7,6 @@ module Talis
   # Each sub class should set base_uri to whatever Talis primitive it needs
   # to talk to.
   class Resource
-    cattr_accessor :oauth_host, :client_id, :client_secret
     include HTTParty
     format :json
     headers 'User-Agent' => "talis-ruby-client/#{Talis::VERSION} "\
@@ -34,10 +33,9 @@ module Talis
 
       def token
         options = {
-          client_id: client_id || Talis::Authentication.client_id,
-          client_secret: client_secret || Talis::Authentication.client_secret
+          client_id: Talis::Authentication.client_id,
+          client_secret: Talis::Authentication.client_secret
         }
-        options[:host] = oauth_host if oauth_host
         Talis::Authentication::Token.generate(options)
       end
 

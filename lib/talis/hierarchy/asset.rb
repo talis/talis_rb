@@ -53,6 +53,8 @@ module Talis
     #  asset.node = node2
     #  asset.save
     class Asset < Talis::Resource
+      extend Talis::OAuthService
+
       base_uri Talis::BLUEPRINT_HOST
 
       # @return [String] The hierarchy namespace.
