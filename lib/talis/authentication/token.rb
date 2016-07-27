@@ -72,8 +72,7 @@ module Talis
         # This should only ever return when being run in unit tests
         return @test_public_key if @test_public_key.present?
         cache_options = { expires_in: 7.minutes,
-                          race_condition_ttl: 10.seconds
-                        }
+                          race_condition_ttl: 10.seconds }
         public_key = Token.cache_store.fetch('public_key', cache_options) do
           options = { format: :plain, headers: { 'X-Request-Id' => req_id } }
           response = self.class.get('/oauth/keys', options)
@@ -125,7 +124,7 @@ module Talis
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def generate(request_id: new_req_id, client_id:, client_secret:,
-            host: base_uri)
+                     host: base_uri)
           token = cached_token(client_id, client_secret, host)
           if token.nil?
             generate_remote_token(request_id, client_id, client_secret, host)
