@@ -134,10 +134,9 @@ module Talis
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def find_by_node(request_id: new_req_id, namespace:, type:, id:, opts:{})
-          assets = []
           data = api_client(request_id).get_assets_in_node(namespace, type,
                                                            id, opts).data
-          data.each { |asset| assets << build(asset, namespace) }
+          data.map! { |asset| build(asset, namespace) }
         rescue BlueprintClient::ApiError => error
           begin
             handle_response(error)
