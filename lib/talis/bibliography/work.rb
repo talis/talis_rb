@@ -42,8 +42,8 @@ module Talis
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, query:, offset: 0, limit: 20, include: [])
-          api_client(request_id).works_get(limit, offset, query, token,
-                                           include: include)
+          api_client(request_id).work(token, query, limit, offset,
+                                      include: include)
                                 .extend(ResultSet).hydrate
         rescue MetatronClient::ApiError => error
           begin
