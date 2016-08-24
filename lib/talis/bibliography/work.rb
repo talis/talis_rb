@@ -162,7 +162,7 @@ module Talis
 
       def parse_work_data(work_data)
         @work_data = work_data
-        @title = work_data.try(:attributes).try(:title)
+        @title = work_data.try(:attributes).try(:titles)
 
         if work_data.try(:relationships).try(:manifestations).try(:data)
           work_data.relationships.manifestations.data.each do |manifestation|
