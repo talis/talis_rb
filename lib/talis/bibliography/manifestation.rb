@@ -138,7 +138,7 @@ module Talis
 
       def find_relationship_in_included(resource_data, included)
         included.find do |resource|
-          resource.id == resource_data[:id] && resource.type == resource_data[:type]
+          resource.id == resource_data.id && resource.type == resource_data.type
         end
       end
 
