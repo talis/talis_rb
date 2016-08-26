@@ -15,9 +15,9 @@ module Talis
     class Manifestation < Talis::Resource
       extend Forwardable, Talis::OAuthService
       base_uri Talis::METATRON_HOST
-      attr_reader :contributors, :assets
+      attr_reader :contributors, :assets, :manifestation_data
       attr_accessor :id, :type, :title
-      def_delegators :@work_data, :id, :type
+      def_delegators :@manifestation_data, :id, :type
 
       # rubocop:disable Metrics/LineLength
       class << self
@@ -143,7 +143,7 @@ module Talis
       end
 
       def parse_manifestation_data(manifestation_data)
-        @work_data = manifestation_data
+        @manifestation_data = manifestation_data
         @title = manifestation_data.try(:attributes).try(:title)
 
         unless manifestation_data.relationships.nil?
