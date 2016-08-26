@@ -142,7 +142,7 @@ module Talis
         end
       end
 
-      def parse_manifestations_data(manifestation_data)
+      def parse_manifestation_data(manifestation_data)
         @work_data = manifestation_data
         @title = manifestation_data.try(:attributes).try(:title)
 
