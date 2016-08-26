@@ -1,6 +1,6 @@
 require_relative 'bibliography/result_set'
 require_relative 'bibliography/work'
-# require_relative 'bibliography/manifestation'
+require_relative 'bibliography/manifestation'
 # require_relative 'bibliography/asset'
 
 module Talis
