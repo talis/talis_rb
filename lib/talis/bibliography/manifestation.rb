@@ -45,8 +45,8 @@ module Talis
           begin
             handle_response(error)
           rescue Talis::Errors::NotFoundError
-            meta = OpenStruct.new(offset: offset, limit: limit, count: 0)
-            MetatronClient::WorkResultSet.new(data: [], meta: meta)
+            meta = OpenStruct.new(count: 0)
+            MetatronClient::ManifestationResultSet.new(data: [], meta: meta)
           end
         end
 
@@ -127,11 +127,6 @@ module Talis
       # typed objects
       # @param resources [Array] an array of Metatron::ResourceData objects
       def hydrate_relationships(included_resources)
-        unless work.nil?
-          work = find_relationship_in_included work.to_hash, included_resources
-          @work = MetatronClient::WorkData.new(work.to_hash)
-        end
-
         contributors.each_with_index do |contributor, idx|
           @contributors[idx] = find_relationship_in_included(contributor,
                                                              included_resources
