@@ -149,12 +149,14 @@ module Talis
         unless manifestation_data.relationships.nil?
           [:contributors, :work].each do |rel|
             if manifestation_data.relationships.try(rel).try(:data)
-              manifestation_data.relationships.send(rel).data.each do |resource|
-                if rel == :contributors
+              if rel == :contributors
+                manifestation_data.relationships.send(rel).data.each do |resource|
                   contributors << resource
-                elsif rel == :work
-                  @work = MetatronClient::WorkData.new(resource.to_hash)
                 end
+              elsif rel == :work
+                @work = MetatronClient::WorkData.new(
+                    manifestation_data.relationships.work.data.to_hash
+                )
               end
             end
           end
