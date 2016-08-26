@@ -146,7 +146,7 @@ module Talis
         @work_data = manifestation_data
         @title = manifestation_data.try(:attributes).try(:title)
 
-        if manifestation_data[:relationships]
+        unless manifestation_data.relationships.nil?
           [:contributors, :work].each do |rel|
             if manifestation_data.relationships.try(rel).try(:data)
               manifestation_data.relationships.send(rel).data.each do |resource|
