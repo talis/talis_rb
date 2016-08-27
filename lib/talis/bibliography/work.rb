@@ -128,10 +128,12 @@ module Talis
       # @param resources [Array] an array of Metatron::ResourceData objects
       def hydrate_relationships(resources)
         manifestations.each_with_index do |manifestation, idx|
-          resource = find_relationship_in_included manifestation.to_hash,
+          resource = find_relationship_in_included manifestation,
                                                    resources
           if resource
-            @manifestations[idx] = MetatronClient::ManifestationData.new resource.to_hash
+            @manifestations[idx] = Manifestation.new(
+                MetatronClient::ManifestationData.new resource.to_hash
+            )
             hydrate_manifestation_assets resource, resources
           end
         end
@@ -156,7 +158,7 @@ module Talis
 
       def find_relationship_in_included(resource_data, included)
         included.find do |resource|
-          resource.id == resource_data[:id] && resource.type == resource_data[:type]
+          resource.id == resource_data.id && resource.type == resource_data.type
         end
       end
 
@@ -166,7 +168,9 @@ module Talis
 
         if work_data.try(:relationships).try(:manifestations).try(:data)
           work_data.relationships.manifestations.data.each do |manifestation|
-            manifestations << MetatronClient::ManifestationData.new(manifestation.to_hash)
+            manifestations << Manifestation.new(
+                MetatronClient::ManifestationData.new(manifestation.to_hash)
+            )
           end
         end
       end
