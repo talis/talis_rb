@@ -51,6 +51,7 @@ module Talis
           rescue Talis::Errors::NotFoundError
             meta = OpenStruct.new(offset: offset, limit: limit, count: 0)
             MetatronClient::WorkResultSet.new(data: [], meta: meta)
+              .extend(ResultSet)
           end
         end
 
