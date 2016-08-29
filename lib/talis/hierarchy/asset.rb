@@ -140,6 +140,7 @@ module Talis
           data = api_client(request_id).get_assets_in_node(namespace, type,
                                                            id, opts).data
           data.each { |asset| assets << build(asset, namespace) }
+          assets
         rescue BlueprintClient::ApiError => error
           begin
             handle_response(error)
