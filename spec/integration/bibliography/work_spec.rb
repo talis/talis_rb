@@ -21,7 +21,7 @@ describe Talis::Bibliography::Work do
     it 'hydrates manifestations when they are included' do
       works = Talis::Bibliography::Work.find(query: 'rockclimbing', offset: 0,
                                              limit: 1,
-                                             include: 'manifestations')
+                                             include: ['manifestations'])
       expect(works).to be_a(MetatronClient::WorkResultSet)
       expect(works.first).to be_a(Talis::Bibliography::Work)
       expect(works.first.manifestations).not_to be_empty
@@ -33,7 +33,7 @@ describe Talis::Bibliography::Work do
     it 'hydrates assets when they are included' do
       works = Talis::Bibliography::Work.find(
         query: 'testament_of_adolf_hitler', offset: 0, limit: 1,
-        include: 'manifestations.assets'
+        include: ['manifestations.assets']
       )
       expect(works).to be_a(MetatronClient::WorkResultSet)
       expect(works.last).to be_a(Talis::Bibliography::Work)
