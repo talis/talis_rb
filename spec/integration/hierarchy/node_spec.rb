@@ -42,7 +42,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       expected_error = Talis::Errors::ClientError
@@ -242,7 +242,7 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc/children}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc/children}).to_return(
         status: [400]
       )
 
