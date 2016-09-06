@@ -1,5 +1,5 @@
-,,college,abc,,College of ABC,Where one learns how to properly AB their Cs,jacs:1234,
-,,department,lmnop,college:abc,Department of LMNOP,Elle Emino P,jacs:2345,
-,,course,stuv,department:lmnop,Introduction to STUV,Elementary STUV,jacs:3456,
-,,course,qr,department:lmnop,Intermediate QR,Applied QR for QRists,jacs:4567,
-,,module,xyz,course:stuv,XYZ for Beginners,,,123
+,,colleges,abc,,College of ABC,Where one learns how to properly AB their Cs,jacs:1234,
+,,departments,lmnop,colleges:abc,Department of LMNOP,Elle Emino P,jacs:2345,
+,,courses,stuv,departments:lmnop,Introduction to STUV,Elementary STUV,jacs:3456,
+,,courses,qr,departments:lmnop,Intermediate QR,Applied QR for QRists,jacs:4567,
+,,modules,xyz,courses:stuv,XYZ for Beginners,,,123
