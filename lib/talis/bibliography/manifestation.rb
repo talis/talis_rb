@@ -3,7 +3,8 @@ require 'forwardable'
 
 module Talis
   module Bibliography
-    # Represents bibliographic manifestations API operations provided by the Metatron gem
+    # Represents bibliographic manifestations API operations provided by the
+    # Metatron gem
     # {https://github.com/talis/blueprint_rb}
     #
     # In order to perform remote operations, the client must be configured
@@ -13,9 +14,9 @@ module Talis
     #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Manifestation < Talis::Resource
-      extend Forwardable, Talis::OAuthService
+      extend Forwardable, Talis::OAuthService, Talis::Bibliography
       base_uri Talis::METATRON_HOST
-      attr_reader :contributors, :assets, :manifestation_data
+      attr_reader :contributors, :assets, :manifestation_data, :work
       attr_accessor :id, :type, :title
       def_delegators :@manifestation_data, :id, :type
 
@@ -40,13 +41,12 @@ module Talis
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, opts: {})
           api_client(request_id).manifestation(token, opts)
-          .extend(ResultSet).hydrate
+                                .extend(ResultSet).hydrate
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
           rescue Talis::Errors::NotFoundError
-            meta = OpenStruct.new(count: 0)
-            MetatronClient::ManifestationResultSet.new(data: [], meta: meta)
+            empty_result_set(MetatronClient::Manifestation, count: 0)
           end
         end
 
@@ -67,36 +67,6 @@ module Talis
             nil
           end
         end
-
-        # Exposes the underlying Metatron API client.
-        # @param request_id [String] ('uuid') unique ID for remote requests.
-        # @return MetatronClient::DefaultApi
-        def api_client(request_id = new_req_id)
-          configure_metatron
-
-          api_client = MetatronClient::ApiClient.new
-          api_client.default_headers = {
-              'X-Request-Id' => request_id,
-              'User-Agent' => "talis-ruby-client/#{Talis::VERSION} "\
-            "ruby/#{RUBY_VERSION}"
-          }
-
-          MetatronClient::DefaultApi.new(api_client)
-        end
-
-        private
-
-        def configure_metatron
-          MetatronClient.configure do |config|
-            config.scheme = base_uri[/https?/]
-            config.host = base_uri
-            # Non-production environments have a base path
-            if ENV['METATRON_BASE_PATH']
-              config.base_path = ENV['METATRON_BASE_PATH']
-            end
-            config.api_key_prefix['Authorization'] = 'Bearer'
-          end
-        end
       end
 
       def initialize(manifestation_data = nil)
@@ -115,11 +85,6 @@ module Talis
       def assets
         @assets ||= []
       end
-      
-      # TODO: call work route if not set
-      def work
-        @work
-      end
 
       # By default, the metatron client returns generic ResourceLink objects
       # as the related resources.  When passed an array of Metatron::ResourceData
@@ -129,8 +94,7 @@ module Talis
       def hydrate_relationships(included_resources)
         contributors.each_with_index do |contributor, idx|
           @contributors[idx] = find_relationship_in_included(contributor,
-                                                             included_resources
-          )
+                                                             included_resources)
         end
       end
 
@@ -147,20 +111,31 @@ module Talis
         @title = manifestation_data.try(:attributes).try(:title)
 
         unless manifestation_data.relationships.nil?
-          [:contributors, :work].each do |rel|
-            if manifestation_data.relationships.try(rel).try(:data)
-              if rel == :contributors
-                manifestation_data.relationships.send(rel).data.each do |resource|
-                  contributors << resource
-                end
-              elsif rel == :work
-                @work = MetatronClient::WorkData.new(
-                    manifestation_data.relationships.work.data.to_hash
-                )
-              end
-            end
+          add_relationships(manifestation_data)
+        end
+      end
+
+      def add_relationships(manifestation_data)
+        [:contributors, :work].each do |rel|
+          next unless manifestation_data.relationships.try(rel).try(:data)
+          if rel == :contributors
+            add_related_contributors(manifestation_data)
+          else
+            add_related_work(manifestation_data)
           end
         end
+      end
+
+      def add_related_contributors(manifestation_data)
+        manifestation_data.relationships.contributors.data.each do |resource|
+          contributors << resource
+        end
+      end
+
+      def add_related_work(manifestation_data)
+        @work = MetatronClient::WorkData.new(
+          manifestation_data.relationships.work.data.to_hash
+        )
       end
     end
   end

@@ -13,7 +13,7 @@ module Talis
     #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Work < Talis::Resource
-      extend Forwardable, Talis::OAuthService
+      extend Forwardable, Talis::OAuthService, Talis::Bibliography
       base_uri Talis::METATRON_HOST
       attr_reader :manifestations, :assets, :work_data
       attr_accessor :id, :type, :title
@@ -49,9 +49,8 @@ module Talis
           begin
             handle_response(error)
           rescue Talis::Errors::NotFoundError
-            meta = OpenStruct.new(offset: offset, limit: limit, count: 0)
-            MetatronClient::WorkResultSet.new(data: [], meta: meta)
-              .extend(ResultSet)
+            empty_result_set(MetatronClient::WorkResultSet,
+                             offset: offset, limit: limit, count: 0)
           end
         end
 
@@ -70,36 +69,6 @@ module Talis
             handle_response(error)
           rescue Talis::Errors::NotFoundError
             nil
-          end
-        end
-
-        # Exposes the underlying Metatron API client.
-        # @param request_id [String] ('uuid') unique ID for remote requests.
-        # @return MetatronClient::DefaultApi
-        def api_client(request_id = new_req_id)
-          configure_metatron
-
-          api_client = MetatronClient::ApiClient.new
-          api_client.default_headers = {
-            'X-Request-Id' => request_id,
-            'User-Agent' => "talis-ruby-client/#{Talis::VERSION} "\
-            "ruby/#{RUBY_VERSION}"
-          }
-
-          MetatronClient::DefaultApi.new(api_client)
-        end
-
-        private
-
-        def configure_metatron
-          MetatronClient.configure do |config|
-            config.scheme = base_uri[/https?/]
-            config.host = base_uri
-            # Non-production environments have a base path
-            if ENV['METATRON_BASE_PATH']
-              config.base_path = ENV['METATRON_BASE_PATH']
-            end
-            config.api_key_prefix['Authorization'] = 'Bearer'
           end
         end
       end
@@ -131,12 +100,11 @@ module Talis
         manifestations.each_with_index do |manifestation, idx|
           resource = find_relationship_in_included manifestation,
                                                    resources
-          if resource
-            @manifestations[idx] = Manifestation.new(
-                MetatronClient::ManifestationData.new resource.to_hash
-            )
-            hydrate_manifestation_assets resource, resources
-          end
+          next unless resource
+          @manifestations[idx] = Manifestation.new(
+            MetatronClient::ManifestationData.new(resource.to_hash)
+          )
+          hydrate_manifestation_assets resource, resources
         end
       end
 
@@ -170,7 +138,7 @@ module Talis
         if work_data.try(:relationships).try(:manifestations).try(:data)
           work_data.relationships.manifestations.data.each do |manifestation|
             manifestations << Manifestation.new(
-                MetatronClient::ManifestationData.new(manifestation.to_hash)
+              MetatronClient::ManifestationData.new(manifestation.to_hash)
             )
           end
         end
