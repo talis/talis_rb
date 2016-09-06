@@ -26,7 +26,7 @@ describe Talis::Bibliography::Work do
       expect(works.first).to be_a(Talis::Bibliography::Work)
       expect(works.first.manifestations).not_to be_empty
       expect(works.first.manifestations.first)
-        .to be_a(MetatronClient::ManifestationData)
+        .to be_a(Talis::Bibliography::Manifestation)
       expect(works.first.assets).to be_empty
     end
 
@@ -39,7 +39,7 @@ describe Talis::Bibliography::Work do
       expect(works.last).to be_a(Talis::Bibliography::Work)
       expect(works.last.manifestations).not_to be_empty
       expect(works.last.manifestations.first)
-        .to be_a(MetatronClient::ManifestationData)
+        .to be_a(Talis::Bibliography::Manifestation)
       expect(works.last.assets).not_to be_empty
       expect(works.last.assets.first).to be_a(MetatronClient::AssetData)
     end
