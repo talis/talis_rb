@@ -21,6 +21,7 @@ describe Talis::Hierarchy::Asset do
                                           id: '0123456789'
                                          )
 
+      expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
       expect(asset.id).to eq '0123456789'
       expect(asset.type).to eq 'textbook'
     end
@@ -102,6 +103,7 @@ describe Talis::Hierarchy::Asset do
       asset = assets.last
 
       expect(assets.size).to eq 5
+      expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
       expect(asset.id).to eq '0123456789'
       expect(asset.type).to eq 'textbook'
     end
