@@ -46,7 +46,7 @@ module Talis
           begin
             handle_response(error)
           rescue Talis::Errors::NotFoundError
-            empty_result_set(MetatronClient::Manifestation, count: 0)
+            empty_result_set(MetatronClient::ManifestationResultSet, count: 0)
           end
         end
 
