@@ -19,6 +19,16 @@ describe Talis::Bibliography::Manifestation do
       expect(books.meta.count).to eq 1
     end
 
+    it 'returns manifestations when given a valid work_id query' do
+      books = Talis::Bibliography::Manifestation.find(
+          opts: { work_id: "amazon_web_services/russellj" }
+      )
+      expect(books).to be_a(MetatronClient::ManifestationResultSet)
+      expect(books.first).to be_a(Talis::Bibliography::Manifestation)
+      expect(books.first).to eq books.data.first
+      expect(books.meta.count).to eq 1
+    end
+
     it 'hydrates manifestations with included contributors' do
       book = Talis::Bibliography::Manifestation.find(
         opts: { isbn: '9785510816150' }
