@@ -10,7 +10,9 @@ describe Talis::Bibliography::Manifestation do
 
   context 'searching manifestations' do
     it 'returns manifestations when given a valid isbn query' do
-      books = Talis::Bibliography::Manifestation.find(isbn: '9785510816150')
+      books = Talis::Bibliography::Manifestation.find(
+        opts: { isbn: '9785510816150' }
+      )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.first).to be_a(Talis::Bibliography::Manifestation)
       expect(books.first).to eq books.data.first
@@ -18,8 +20,9 @@ describe Talis::Bibliography::Manifestation do
     end
 
     it 'hydrates manifestations with included contributors' do
-      book = Talis::Bibliography::Manifestation.find(isbn: '9785510816150')
-                                               .first
+      book = Talis::Bibliography::Manifestation.find(
+        opts: { isbn: '9785510816150' }
+      ).first
       expect(book).to be_a(Talis::Bibliography::Manifestation)
       expect(book.contributors).to be_a(Array)
       expect(book.contributors.first).to be_a(MetatronClient::ResourceData)
@@ -28,14 +31,17 @@ describe Talis::Bibliography::Manifestation do
     end
 
     it 'hydrates manifestations with included work' do
-      book = Talis::Bibliography::Manifestation.find(isbn: '9785510816150')
-                                               .first
+      book = Talis::Bibliography::Manifestation.find(
+        opts: { isbn: '9785510816150' }
+      ).first
       expect(book).to be_a(Talis::Bibliography::Manifestation)
       expect(book.work).to be_a(Talis::Bibliography::Work)
     end
 
     it 'should return an empty ManifestationResult if there are no matches' do
-      books = Talis::Bibliography::Manifestation.find(isbn: '0123456789')
+      books = Talis::Bibliography::Manifestation.find(
+        opts: { isbn: '9785510816150' }
+      )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.data).to be_empty
       expect(books.meta.count).to eq 0
