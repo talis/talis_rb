@@ -5,7 +5,7 @@ describe Talis::Bibliography::Manifestation do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::Authentication.client_id = client_id
     Talis::Authentication.client_secret = client_secret
-    Talis::Bibliography::Work.base_uri(metatron_base_uri)
+    Talis::Bibliography::Manifestation.base_uri(metatron_base_uri)
   end
 
   context 'searching manifestations' do
