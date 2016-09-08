@@ -35,12 +35,12 @@ describe Talis::Bibliography::Manifestation do
         opts: { isbn: '9785510816150' }
       ).first
       expect(book).to be_a(Talis::Bibliography::Manifestation)
-      expect(book.work).to be_a(Talis::Bibliography::Work)
+      expect(book.work).to be_a(MetatronClient::WorkData)
     end
 
     it 'should return an empty ManifestationResult if there are no matches' do
       books = Talis::Bibliography::Manifestation.find(
-        opts: { isbn: '9785510816150' }
+        opts: { isbn: '0123456789' }
       )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.data).to be_empty
