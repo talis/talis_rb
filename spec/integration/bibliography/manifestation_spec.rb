@@ -21,7 +21,7 @@ describe Talis::Bibliography::Manifestation do
 
     it 'returns manifestations when given a valid work_id query' do
       books = Talis::Bibliography::Manifestation.find(
-          opts: { work_id: "amazon_web_services/russellj" }
+        opts: { work_id: 'amazon_web_services/russellj' }
       )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.first).to be_a(Talis::Bibliography::Manifestation)
