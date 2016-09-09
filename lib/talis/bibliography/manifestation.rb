@@ -5,7 +5,7 @@ module Talis
   module Bibliography
     # Represents bibliographic manifestations API operations provided by the
     # Metatron gem
-    # {https://github.com/talis/blueprint_rb}
+    # {https://github.com/talis/metatron_rb}
     #
     # In order to perform remote operations, the client must be configured
     # with a valid OAuth client that is allowed to query nodes:
