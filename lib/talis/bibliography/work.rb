@@ -97,14 +97,14 @@ module Talis
       # typed objects
       # @param resources [Array] an array of Metatron::ResourceData objects
       def hydrate_relationships(resources)
-        manifestations.each_with_index do |m, idx|
+        manifestations.map! do |m|
           resource = find_relationship_in_included m.manifestation_data.to_hash,
                                                    resources
-          next unless resource
-          @manifestations[idx] = Manifestation.new(
-            MetatronClient::ManifestationData.new(resource.to_hash)
-          )
+          return m unless resource
           hydrate_manifestation_assets resource, resources
+          Manifestation.new(MetatronClient::ManifestationData.new(
+                              resource.to_hash
+          ))
         end
         nil
       end

@@ -92,7 +92,6 @@ module Talis
       # typed objects
       # @param resources [Array] an array of Metatron::ResourceData objects
       def hydrate_relationships(included_resources)
-        return if contributors.empty?
         @contributors.map! do |contributor|
           find_relationship_in_included(contributor,
                                         included_resources)
