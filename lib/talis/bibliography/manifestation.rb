@@ -111,7 +111,7 @@ module Talis
         @manifestation_data = manifestation_data
         @title = manifestation_data.try(:attributes).try(:title)
 
-        if manifestation_data.relationships.any?
+        unless manifestation_data.relationships.nil?
           add_relationships(manifestation_data)
         end
       end
