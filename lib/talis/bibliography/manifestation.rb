@@ -92,9 +92,10 @@ module Talis
       # typed objects
       # @param resources [Array] an array of Metatron::ResourceData objects
       def hydrate_relationships(included_resources)
-        contributors.each_with_index do |contributor, idx|
-          @contributors[idx] = find_relationship_in_included(contributor,
-                                                             included_resources)
+        return if contributors.empty?
+        @contributors.map! do |contributor|
+          find_relationship_in_included(contributor,
+                                        included_resources)
         end
       end
 
@@ -110,7 +111,7 @@ module Talis
         @manifestation_data = manifestation_data
         @title = manifestation_data.try(:attributes).try(:title)
 
-        unless manifestation_data.relationships.nil?
+        if manifestation_data.relationships.any?
           add_relationships(manifestation_data)
         end
       end
@@ -127,9 +128,8 @@ module Talis
       end
 
       def add_related_contributors(manifestation_data)
-        manifestation_data.relationships.contributors.data.each do |resource|
-          contributors << resource
-        end
+        @contributors ||= []
+        @contributors += manifestation_data.relationships.contributors.data
       end
 
       def add_related_work(manifestation_data)

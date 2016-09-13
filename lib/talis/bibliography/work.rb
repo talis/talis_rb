@@ -106,6 +106,7 @@ module Talis
           )
           hydrate_manifestation_assets resource, resources
         end
+        nil
       end
 
       private
@@ -117,6 +118,7 @@ module Talis
             assets << MetatronClient::AssetData.new(asset.to_hash) if asset
           end
         end
+        nil
       end
 
       def manifestation_has_assets?(manifestation)

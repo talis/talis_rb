@@ -135,7 +135,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def find_by_node(request_id: new_req_id, namespace:, type:, id:, opts:{})
+        def find_by_node(request_id: new_req_id, namespace:, type:, id:, opts: {})
           data = api_client(request_id).get_assets_in_node(namespace, type,
                                                            id, opts).data
           data.map! { |asset| build(asset, namespace) }

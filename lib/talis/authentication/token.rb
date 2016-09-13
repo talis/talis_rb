@@ -169,8 +169,7 @@ module Talis
                  client_id: client_id,
                  client_secret: client_secret,
                  grant_type: 'client_credentials'
-               }
-              )
+               })
         rescue
           raise Talis::Errors::ServerCommunicationError
         end

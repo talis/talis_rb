@@ -18,8 +18,7 @@ describe Talis::Hierarchy::Asset do
     it 'returns a single asset' do
       asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                           type: 'textbooks',
-                                          id: '0123456789'
-                                         )
+                                          id: '0123456789')
 
       expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
       expect(asset.id).to eq '0123456789'
@@ -29,8 +28,7 @@ describe Talis::Hierarchy::Asset do
     it 'returns nil when the asset is not found' do
       asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                           type: 'textbooks',
-                                          id: 'notfound'
-                                         )
+                                          id: 'notfound')
 
       expect(asset).to be_nil
     end
@@ -98,8 +96,7 @@ describe Talis::Hierarchy::Asset do
     it 'returns all assets belonging to a node when no options are given' do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
-                                                    id: 'xyz'
-                                                   )
+                                                    id: 'xyz')
       asset = assets.last
 
       expect(assets.size).to eq 5
@@ -111,8 +108,7 @@ describe Talis::Hierarchy::Asset do
     it 'returns an empty array when no assets are found' do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
-                                                    id: 'notfound'
-                                                   )
+                                                    id: 'notfound')
 
       expect(assets).to eq []
     end
@@ -183,8 +179,7 @@ describe Talis::Hierarchy::Asset do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
 
       expect(assets.size).to eq 3
       assets.each do |asset|
@@ -199,8 +194,7 @@ describe Talis::Hierarchy::Asset do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
 
       expect(assets.size).to eq 1
     end
@@ -212,8 +206,7 @@ describe Talis::Hierarchy::Asset do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
       asset = assets.first
 
       expect(asset.id).to eq '123'
@@ -228,8 +221,7 @@ describe Talis::Hierarchy::Asset do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
       asset = assets.first
 
       expect(asset.id).to eq '456'
@@ -252,16 +244,14 @@ describe Talis::Hierarchy::Asset do
     it 'saves a valid asset' do
       expected_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                    type: 'notes',
-                                                   id: '999'
-                                                  )
+                                                   id: '999')
       expect(expected_asset).to be_nil
 
       asset.save
 
       created_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'notes',
-                                                  id: '999'
-                                                 )
+                                                  id: '999')
 
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
@@ -313,8 +303,7 @@ describe Talis::Hierarchy::Asset do
       asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                    type: 'notes',
-                                                   id: '999'
-                                                  )
+                                                   id: '999')
       expect(existing_asset.attributes).to eq({})
 
       existing_asset.attributes = { test: 'attribute' }
@@ -322,8 +311,7 @@ describe Talis::Hierarchy::Asset do
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'notes',
-                                                  id: '999'
-                                                 )
+                                                  id: '999')
       expect(updated_asset.attributes[:test]).to eq 'attribute'
     end
 
@@ -331,8 +319,7 @@ describe Talis::Hierarchy::Asset do
       asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                    type: 'notes',
-                                                   id: '999'
-                                                  )
+                                                   id: '999')
       expect(existing_asset.attributes).to eq({})
 
       existing_asset.type = 'lists'
@@ -340,8 +327,7 @@ describe Talis::Hierarchy::Asset do
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'lists',
-                                                  id: '999'
-                                                 )
+                                                  id: '999')
       expect(updated_asset).not_to be_nil
     end
 

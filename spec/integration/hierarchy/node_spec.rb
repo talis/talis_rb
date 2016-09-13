@@ -15,8 +15,7 @@ describe Talis::Hierarchy::Node do
     it 'returns a single node' do
       node = Talis::Hierarchy::Node.get(namespace: namespace,
                                         type: 'colleges',
-                                        id: 'abc'
-                                       )
+                                        id: 'abc')
 
       expect(node.id).to eq 'abc'
       expect(node.type).to eq 'colleges'
@@ -29,8 +28,7 @@ describe Talis::Hierarchy::Node do
     it 'returns nil when the node is not found' do
       node = Talis::Hierarchy::Node.get(namespace: 'notfound',
                                         type: 'colleges',
-                                        id: 'abc'
-                                       )
+                                        id: 'abc')
 
       expect(node).to be_nil
     end
@@ -220,8 +218,7 @@ describe Talis::Hierarchy::Node do
     it 'returns all children' do
       children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'colleges',
-                                                 id: 'abc'
-                                                )
+                                                 id: 'abc')
       node = children.first
 
       expect(children.size).to eq 1
@@ -235,8 +232,7 @@ describe Talis::Hierarchy::Node do
     it 'returns an empty array when no children are found' do
       children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'modules',
-                                                 id: 'xyz'
-                                                )
+                                                 id: 'xyz')
 
       expect(children).to eq []
     end
@@ -309,8 +305,7 @@ describe Talis::Hierarchy::Node do
       children = Talis::Hierarchy::Node.children(namespace: namespace,
                                                  type: 'departments',
                                                  id: 'lmnop',
-                                                 opts: opts
-                                                )
+                                                 opts: opts)
       node = children.first
 
       expect(children.size).to eq 1
@@ -326,8 +321,7 @@ describe Talis::Hierarchy::Node do
     it 'returns all parents' do
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'departments',
-                                               id: 'lmnop'
-                                              )
+                                               id: 'lmnop')
       node = parents.first
 
       expect(parents.size).to eq 1
@@ -342,8 +336,7 @@ describe Talis::Hierarchy::Node do
     it 'returns an empty array when no parents are found' do
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'colleges',
-                                               id: 'abc'
-                                              )
+                                               id: 'abc')
 
       expect(parents).to eq []
     end
@@ -414,8 +407,7 @@ describe Talis::Hierarchy::Node do
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
                                                type: 'departments',
                                                id: 'lmnop',
-                                               opts: opts
-                                              )
+                                               opts: opts)
       node = parents.first
 
       expect(parents.size).to eq 1
@@ -432,8 +424,7 @@ describe Talis::Hierarchy::Node do
     it 'returns all ancestors' do
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'courses',
-                                                   id: 'stuv'
-                                                  )
+                                                   id: 'stuv')
       node = ancestors.first
 
       expect(ancestors.size).to eq 2
@@ -448,8 +439,7 @@ describe Talis::Hierarchy::Node do
     it 'returns an empty array when no ancestors are found' do
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'colleges',
-                                                   id: 'abc'
-                                                  )
+                                                   id: 'abc')
 
       expect(ancestors).to eq []
     end
@@ -522,8 +512,7 @@ describe Talis::Hierarchy::Node do
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
                                                    type: 'courses',
                                                    id: 'stuv',
-                                                   opts: opts
-                                                  )
+                                                   opts: opts)
       node = ancestors.first
 
       expect(ancestors.size).to eq 1
@@ -539,8 +528,7 @@ describe Talis::Hierarchy::Node do
     it 'returns all descendants' do
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'departments',
-                                                       id: 'lmnop'
-                                                      )
+                                                       id: 'lmnop')
       node = descendants.first
 
       expect(descendants.size).to eq 3
@@ -554,8 +542,7 @@ describe Talis::Hierarchy::Node do
     it 'returns an empty array when no descendants are found' do
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'modules',
-                                                       id: 'xyz'
-                                                      )
+                                                       id: 'xyz')
 
       expect(descendants).to eq []
     end
@@ -626,8 +613,7 @@ describe Talis::Hierarchy::Node do
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
                                                        type: 'departments',
                                                        id: 'lmnop',
-                                                       opts: opts
-                                                      )
+                                                       opts: opts)
       node = descendants.first
 
       expect(descendants.size).to eq 1

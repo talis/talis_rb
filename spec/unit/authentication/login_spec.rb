@@ -276,7 +276,8 @@ describe Talis::Authentication::Login do
 
     # When Persona encodes the JSON, forward slashes are escaped
     signature = OpenSSL::HMAC.hexdigest(
-      digest, 'sssh', login_data.to_json.gsub('/', '\/'))
+      digest, 'sssh', login_data.to_json.gsub('/', '\/')
+    )
     login_data[:signature] = signature
 
     valid_payload = Base64.encode64(login_data.to_json.gsub('/', '\/'))
