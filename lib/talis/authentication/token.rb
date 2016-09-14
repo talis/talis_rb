@@ -72,8 +72,7 @@ module Talis
         # This should only ever return when being run in unit tests
         return @test_public_key if @test_public_key.present?
         cache_options = { expires_in: 7.minutes,
-                          race_condition_ttl: 10.seconds
-                        }
+                          race_condition_ttl: 10.seconds }
         public_key = Token.cache_store.fetch('public_key', cache_options) do
           options = { format: :plain, headers: { 'X-Request-Id' => req_id } }
           response = self.class.get('/oauth/keys', options)
@@ -118,16 +117,18 @@ module Talis
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param client_id [String] the client for whom this token is for.
         # @param client_secret [String] secret belonging to the client.
+        # @param host [String] Optional persona host override for service
         # @return [Talis::Authentication::Token] the generated or cached token.
         # @raise [Talis::Errors::ClientError] if the client ID/secret are
         #   invalid.
         # @raise [Talis::Errors::ServerError] if the generation failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def generate(request_id: new_req_id, client_id:, client_secret:)
-          token = cached_token(client_id, client_secret)
+        def generate(request_id: new_req_id, client_id:, client_secret:,
+                     host: base_uri)
+          token = cached_token(client_id, client_secret, host)
           if token.nil?
-            generate_remote_token(request_id, client_id, client_secret)
+            generate_remote_token(request_id, client_id, client_secret, host)
           else
             new(jwt: token)
           end
@@ -135,10 +136,10 @@ module Talis
 
         private
 
-        def generate_remote_token(request_id, client_id, client_secret)
-          response = create_token(request_id, client_id, client_secret)
+        def generate_remote_token(request_id, client_id, client_secret, host)
+          response = create_token(request_id, client_id, client_secret, host)
           parsed_response = handle_response(response)
-          cache_token(parsed_response, client_id, client_secret)
+          cache_token(parsed_response, client_id, client_secret, host)
           new(jwt: parsed_response['access_token'])
         end
 
@@ -147,29 +148,28 @@ module Talis
           OpenSSL::HMAC.hexdigest(digest, data, secret)
         end
 
-        def cache_token(data, client_id, client_secret)
+        def cache_token(data, client_id, client_secret, host)
           access_token = data['access_token']
           # Expire the cache slightly before the token expires to cater for
           # communication delay between server issuing and client receiving.
           expiry_time = data['expires_in'].to_i - 5.seconds
-          Token.cache_store.write(digest_data(client_id, client_secret),
+          Token.cache_store.write(digest_data(host + client_id, client_secret),
                                   access_token, expires_in: expiry_time)
         end
 
-        def cached_token(client_id, client_secret)
-          key = digest_data(client_id, client_secret)
+        def cached_token(client_id, client_secret, host)
+          key = digest_data(host + client_id, client_secret)
           Token.cache_store.fetch(key) if Token.cache_store.exist?(key)
         end
 
-        def create_token(request_id, client_id, client_secret)
-          post('/oauth/tokens',
+        def create_token(request_id, client_id, client_secret, host)
+          post(host + '/oauth/tokens',
                headers: { 'X-Request-Id' => request_id },
                body: {
                  client_id: client_id,
                  client_secret: client_secret,
                  grant_type: 'client_credentials'
-               }
-              )
+               })
         rescue
           raise Talis::Errors::ServerCommunicationError
         end

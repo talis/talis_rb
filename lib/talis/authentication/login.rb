@@ -142,8 +142,7 @@ module Talis
                           first_name: profile['first_name'],
                           surname: profile['surname'],
                           email: profile['email'],
-                          access_token: data.fetch('token', {})['access_token']
-                         )
+                          access_token: data.fetch('token', {})['access_token'])
       end
 
       def decode_and_parse_payload(payload)

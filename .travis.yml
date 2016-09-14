@@ -1,6 +1,7 @@
 language: ruby
 rvm:
-- 2.2.3
+- 2.2.5
+- 2.3.1
 before_install: gem install bundler -v 1.11.2
 notifications:
   hipchat:
@@ -15,7 +16,7 @@ env:
   - PERSONA_TEST_HOST: https://staging-users.talis.com
   - BLUEPRINT_TEST_HOST: https://staging-hierarchy.talis.com
   - METATRON_TEST_HOST: https://4yk6o0puk0.execute-api.eu-west-1.amazonaws.com
-  - METATRON_BASE_PATH: /development
+  - METATRON_BASE_PATH: /development/2
   # - METATRON_TEST_HOST: https://bibliography.talis.com/2
   - secure: BE2l30U/CLy50vFGV33JCu8t5sr3S0tjCVHcyvby9ChLj7SbceiL7oFhdInCfUFP5uOn9JoyAeULq0JSJK+j5tPsWVGXW0j1hJGvOjcDPA9gsvA4IpgH0WNs6eX5GZkYJIMioJB1MrRP8Hq6teUIC8fb51DQOkL8IRydD1qJsLOgebKfJHLB1hEXHUO0O4Mn3lZrJNjthZrNJG4bhBLvTnki4dmBu+vzEVBb8QMxpnNbBVUI8P3Uo4WlygOnirnW6naxBizHK7EAV6Hk221eTyarepe9u0CpWPXVG5XiHtedUDUU6SdT9XW0lgk26jC78qjf4+VbKIq7Xnmet9bO0K25A8A9ggwEbYv60KPhSeVbTlFt8a1cvthxmfhcgTBdX1JuZ+QbTt6Ex1Pq5efDM1XTKM9wDa1fEz2/+JTIAD6t6nOP8I45M7bRY/WyBXD1TNEU3XWDuJHRf9RlHgfALbc+GD4PHa6/QvWv6gmAAfeGMWbTnl/bDIk6zghfLcM9NhiZErz9V+AX7uQPlKSzqsz/WtjCthz4nFltNVisKftFLZieOR0QOJNDo10KPAbMnRk5R/5znlMd/zyH7C2oGlMCAjVK5GETJnRyw26/y0S5PWwxovf3p+IjXeNrRiHmsiSiVUK/e9EPiSya5n/GPRR9x9VoYEmo9fS88g8+Buo=
   - secure: ndyBRplFd1IKVlabpPm/YxLKcD18MPflgtIjmhsEHzEQdvBlviwL7zXjpcISlrSLD5y7s4VMookrSXSWMMve4pFonjKUEOXS8yH8ARKe40i2PcdKuiGvD5DWKZXJvNfmOKoWFgG0uK/v8PJcniW/NyLjAJ915MAEvI0fBUjq4B6ZZYHd3oEIpDctDxN3jF/xK9058LCgT68IDAun16F+UnqdNdWj6I4BDM2ljhIZpsCYjVQAgPvYE85AYdJpPJUlO28MMj+iJzS2ZlubDngligtu4OWyDzTua8aez3V9OobPLNEfoCIW+a+9IiBM8QrUfomIUlccQ9j2B2u5i7n6w6KqfKi3PZd3jtkoG+nScWHnCCovTi8w9Dw5umiQrAr4y80XgQclWhi3HpTuzb/jKinec6Q7kXpdwIem+LEhX0Gp54azuJna51nw1Pf0sym3Ic096/SLgvxgtMi3JDUFu/VCHrHYnCAkjy42c7SKoMWzQ69dyTTK3+X32xasP8FT+F7CSEKbPS0D1zhpR9xpNDFmQkQklccBa9nY9CzFPe7YsvtaP7fW739lH8NfrD8faD7/BPoVIgX8/7ZKRKj1mXGDukvg4pizrd+U4O6iDkqQUfPkQE6+PLvdb2FZS+WjeR7xtXReH3dAk8D2sqZVoGl6nbDAKcxJUABKozPNl6s=

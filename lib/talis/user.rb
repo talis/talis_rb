@@ -71,8 +71,7 @@ module Talis
                        headers: {
                          'X-Request-Id' => request_id,
                          'Authorization' => "Bearer #{token}"
-                       }
-                      )
+                       })
         new(extract_user_data(handle_response(response)))
       rescue Talis::Errors::NotFoundError
         nil

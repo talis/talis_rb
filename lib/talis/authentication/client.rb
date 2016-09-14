@@ -62,8 +62,7 @@ module Talis
                            'Content-Type' => 'application/json',
                            'Authorization' => bearer_token
                          },
-                         body: { scope: { action => scope } }.to_json
-                        )
+                         body: { scope: { action => scope } }.to_json)
       end
 
       def acquire_host!(opts)

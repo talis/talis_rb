@@ -14,12 +14,11 @@ describe Talis::Hierarchy::Node do
   context 'retrieving nodes' do
     it 'returns a single node' do
       node = Talis::Hierarchy::Node.get(namespace: namespace,
-                                        type: 'college',
-                                        id: 'abc'
-                                       )
+                                        type: 'colleges',
+                                        id: 'abc')
 
       expect(node.id).to eq 'abc'
-      expect(node.type).to eq 'college'
+      expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
       expect(node.attributes.description).to eq 'Where one learns how to '\
         'properly AB their Cs'
@@ -28,21 +27,20 @@ describe Talis::Hierarchy::Node do
 
     it 'returns nil when the node is not found' do
       node = Talis::Hierarchy::Node.get(namespace: 'notfound',
-                                        type: 'college',
-                                        id: 'abc'
-                                       )
+                                        type: 'colleges',
+                                        id: 'abc')
 
       expect(node).to be_nil
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc}).to_return(
         status: [400]
       )
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       expected_error = Talis::Errors::ClientError
@@ -51,13 +49,13 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc}).to_return(
         status: [500]
       )
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       expected_error = Talis::Errors::ServerError
@@ -70,7 +68,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       expected_error = Talis::Errors::ServerCommunicationError
@@ -84,7 +82,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       expected_error = Talis::Errors::ClientError
@@ -102,7 +100,7 @@ describe Talis::Hierarchy::Node do
 
       expect(nodes.size).to eq 5
       expect(node.id).to eq 'abc'
-      expect(node.type).to eq 'college'
+      expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
       expect(node.attributes.description).to eq 'Where one learns how to '\
         'properly AB their Cs'
@@ -163,13 +161,13 @@ describe Talis::Hierarchy::Node do
 
     it 'can filter nodes by the given property' do
       opts = {
-        filter_node_type: ['course']
+        filter_node_type: ['courses']
       }
       nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
 
       expect(nodes.size).to eq 2
       nodes.each do |node|
-        expect(node.type).to eq 'course'
+        expect(node.type).to eq 'courses'
       end
     end
 
@@ -190,7 +188,7 @@ describe Talis::Hierarchy::Node do
       node = nodes.first
 
       expect(node.id).to eq 'lmnop'
-      expect(node.type).to eq 'department'
+      expect(node.type).to eq 'departments'
       expect(node.attributes.title).to eq 'Department of LMNOP'
       expect(node.attributes.description).to eq 'Elle Emino P'
       expect(node.attributes.domain_ids).to eq ['jacs:2345']
@@ -198,14 +196,14 @@ describe Talis::Hierarchy::Node do
 
     it 'can apply multiple search options' do
       opts = {
-        filter_node_type: ['course'],
+        filter_node_type: ['courses'],
         offset: 1
       }
       nodes = Talis::Hierarchy::Node.find(namespace: namespace, opts: opts).data
       node = nodes.first
 
       expect(node.id).to eq 'qr'
-      expect(node.type).to eq 'course'
+      expect(node.type).to eq 'courses'
       expect(node.attributes.title).to eq 'Intermediate QR'
       expect(node.attributes.description).to eq 'Applied QR for QRists'
       expect(node.attributes.domain_ids).to eq ['jacs:4567']
@@ -219,14 +217,13 @@ describe Talis::Hierarchy::Node do
   context 'retrieving children from a node' do
     it 'returns all children' do
       children = Talis::Hierarchy::Node.children(namespace: namespace,
-                                                 type: 'college',
-                                                 id: 'abc'
-                                                )
+                                                 type: 'colleges',
+                                                 id: 'abc')
       node = children.first
 
       expect(children.size).to eq 1
       expect(node.id).to eq 'lmnop'
-      expect(node.type).to eq 'department'
+      expect(node.type).to eq 'departments'
       expect(node.attributes.title).to eq 'Department of LMNOP'
       expect(node.attributes.description).to eq 'Elle Emino P'
       expect(node.attributes.domain_ids).to eq ['jacs:2345']
@@ -234,21 +231,20 @@ describe Talis::Hierarchy::Node do
 
     it 'returns an empty array when no children are found' do
       children = Talis::Hierarchy::Node.children(namespace: namespace,
-                                                 type: 'module',
-                                                 id: 'xyz'
-                                                )
+                                                 type: 'modules',
+                                                 id: 'xyz')
 
       expect(children).to eq []
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc/children}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc/children}).to_return(
         status: [400]
       )
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ClientError
@@ -257,13 +253,13 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc/children}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc/children}).to_return(
         status: [500]
       )
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ServerError
@@ -276,7 +272,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ServerCommunicationError
@@ -290,7 +286,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ClientError
@@ -307,15 +303,14 @@ describe Talis::Hierarchy::Node do
       }
 
       children = Talis::Hierarchy::Node.children(namespace: namespace,
-                                                 type: 'department',
+                                                 type: 'departments',
                                                  id: 'lmnop',
-                                                 opts: opts
-                                                )
+                                                 opts: opts)
       node = children.first
 
       expect(children.size).to eq 1
       expect(node.id).to eq 'qr'
-      expect(node.type).to eq 'course'
+      expect(node.type).to eq 'courses'
       expect(node.attributes.title).to eq 'Intermediate QR'
       expect(node.attributes.description).to eq 'Applied QR for QRists'
       expect(node.attributes.domain_ids).to eq ['jacs:4567']
@@ -325,14 +320,13 @@ describe Talis::Hierarchy::Node do
   context 'retrieving parents from a node' do
     it 'returns all parents' do
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
-                                               type: 'department',
-                                               id: 'lmnop'
-                                              )
+                                               type: 'departments',
+                                               id: 'lmnop')
       node = parents.first
 
       expect(parents.size).to eq 1
       expect(node.id).to eq 'abc'
-      expect(node.type).to eq 'college'
+      expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
       expect(node.attributes.description).to eq 'Where one learns how to '\
         'properly AB their Cs'
@@ -341,20 +335,19 @@ describe Talis::Hierarchy::Node do
 
     it 'returns an empty array when no parents are found' do
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
-                                               type: 'college',
-                                               id: 'abc'
-                                              )
+                                               type: 'colleges',
+                                               id: 'abc')
 
       expect(parents).to eq []
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/department/lmnop/parents})
+      stub_request(:get, %r{1/rubytest/nodes/departments/lmnop/parents})
         .to_return(status: [400])
 
       opts = {
         namespace: namespace,
-        type: 'department',
+        type: 'departments',
         id: 'lmnop'
       }
       error = Talis::Errors::ClientError
@@ -363,12 +356,12 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/department/lmnop/parents})
+      stub_request(:get, %r{1/rubytest/nodes/departments/lmnop/parents})
         .to_return(status: [500])
 
       opts = {
         namespace: namespace,
-        type: 'department',
+        type: 'departments',
         id: 'lmnop'
       }
       error = Talis::Errors::ServerError
@@ -381,7 +374,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'department',
+        type: 'departments',
         id: 'lmnop'
       }
       error = Talis::Errors::ServerCommunicationError
@@ -395,7 +388,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'department',
+        type: 'departments',
         id: 'lmnop'
       }
       error = Talis::Errors::ClientError
@@ -412,15 +405,14 @@ describe Talis::Hierarchy::Node do
       }
 
       parents = Talis::Hierarchy::Node.parents(namespace: namespace,
-                                               type: 'department',
+                                               type: 'departments',
                                                id: 'lmnop',
-                                               opts: opts
-                                              )
+                                               opts: opts)
       node = parents.first
 
       expect(parents.size).to eq 1
       expect(node.id).to eq 'abc'
-      expect(node.type).to eq 'college'
+      expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
       expect(node.attributes.description).to eq 'Where one learns how to '\
         'properly AB their Cs'
@@ -431,14 +423,13 @@ describe Talis::Hierarchy::Node do
   context 'retrieving ancestors from a node' do
     it 'returns all ancestors' do
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
-                                                   type: 'course',
-                                                   id: 'stuv'
-                                                  )
+                                                   type: 'courses',
+                                                   id: 'stuv')
       node = ancestors.first
 
       expect(ancestors.size).to eq 2
       expect(node.id).to eq 'abc'
-      expect(node.type).to eq 'college'
+      expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
       expect(node.attributes.description).to eq 'Where one learns how to '\
         'properly AB their Cs'
@@ -447,21 +438,20 @@ describe Talis::Hierarchy::Node do
 
     it 'returns an empty array when no ancestors are found' do
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
-                                                   type: 'college',
-                                                   id: 'abc'
-                                                  )
+                                                   type: 'colleges',
+                                                   id: 'abc')
 
       expect(ancestors).to eq []
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/course/stuv/ancestors}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/courses/stuv/ancestors}).to_return(
         status: [400]
       )
 
       opts = {
         namespace: namespace,
-        type: 'course',
+        type: 'courses',
         id: 'stuv'
       }
       error = Talis::Errors::ClientError
@@ -470,13 +460,13 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/course/stuv/ancestors}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/courses/stuv/ancestors}).to_return(
         status: [500]
       )
 
       opts = {
         namespace: namespace,
-        type: 'course',
+        type: 'courses',
         id: 'stuv'
       }
       error = Talis::Errors::ServerError
@@ -503,7 +493,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'course',
+        type: 'courses',
         id: 'stuv'
       }
       error = Talis::Errors::ClientError
@@ -520,15 +510,14 @@ describe Talis::Hierarchy::Node do
       }
 
       ancestors = Talis::Hierarchy::Node.ancestors(namespace: namespace,
-                                                   type: 'course',
+                                                   type: 'courses',
                                                    id: 'stuv',
-                                                   opts: opts
-                                                  )
+                                                   opts: opts)
       node = ancestors.first
 
       expect(ancestors.size).to eq 1
       expect(node.id).to eq 'lmnop'
-      expect(node.type).to eq 'department'
+      expect(node.type).to eq 'departments'
       expect(node.attributes.title).to eq 'Department of LMNOP'
       expect(node.attributes.description).to eq 'Elle Emino P'
       expect(node.attributes.domain_ids).to eq ['jacs:2345']
@@ -538,14 +527,13 @@ describe Talis::Hierarchy::Node do
   context 'retrieving descendants from a node' do
     it 'returns all descendants' do
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
-                                                       type: 'department',
-                                                       id: 'lmnop'
-                                                      )
+                                                       type: 'departments',
+                                                       id: 'lmnop')
       node = descendants.first
 
       expect(descendants.size).to eq 3
       expect(node.id).to eq 'stuv'
-      expect(node.type).to eq 'course'
+      expect(node.type).to eq 'courses'
       expect(node.attributes.title).to eq 'Introduction to STUV'
       expect(node.attributes.description).to eq 'Elementary STUV'
       expect(node.attributes.domain_ids).to eq ['jacs:3456']
@@ -553,20 +541,19 @@ describe Talis::Hierarchy::Node do
 
     it 'returns an empty array when no descendants are found' do
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
-                                                       type: 'module',
-                                                       id: 'xyz'
-                                                      )
+                                                       type: 'modules',
+                                                       id: 'xyz')
 
       expect(descendants).to eq []
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc/descendants})
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc/descendants})
         .to_return(status: [400])
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ClientError
@@ -575,12 +562,12 @@ describe Talis::Hierarchy::Node do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/college/abc/descendants})
+      stub_request(:get, %r{1/rubytest/nodes/colleges/abc/descendants})
         .to_return(status: [500])
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ServerError
@@ -593,7 +580,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ServerCommunicationError
@@ -607,7 +594,7 @@ describe Talis::Hierarchy::Node do
 
       opts = {
         namespace: namespace,
-        type: 'college',
+        type: 'colleges',
         id: 'abc'
       }
       error = Talis::Errors::ClientError
@@ -624,15 +611,14 @@ describe Talis::Hierarchy::Node do
       }
 
       descendants = Talis::Hierarchy::Node.descendants(namespace: namespace,
-                                                       type: 'department',
+                                                       type: 'departments',
                                                        id: 'lmnop',
-                                                       opts: opts
-                                                      )
+                                                       opts: opts)
       node = descendants.first
 
       expect(descendants.size).to eq 1
       expect(node.id).to eq 'qr'
-      expect(node.type).to eq 'course'
+      expect(node.type).to eq 'courses'
       expect(node.attributes.title).to eq 'Intermediate QR'
       expect(node.attributes.description).to eq 'Applied QR for QRists'
       expect(node.attributes.domain_ids).to eq ['jacs:4567']

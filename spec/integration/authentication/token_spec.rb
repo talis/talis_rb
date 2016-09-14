@@ -58,7 +58,9 @@ describe Talis::Authentication::Token do
 
     it 'caches tokens securely' do
       digest = OpenSSL::Digest.new('sha256')
-      cache_key = OpenSSL::HMAC.hexdigest(digest, client_id, client_secret)
+      host_client_id = Talis::Authentication::Token.base_uri + client_id
+      cache_key = OpenSSL::HMAC.hexdigest(digest, host_client_id,
+                                          client_secret)
 
       expect(cache_store.fetch(cache_key)).to be_nil
 

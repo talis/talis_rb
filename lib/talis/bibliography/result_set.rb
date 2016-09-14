@@ -20,8 +20,11 @@ module Talis
 
       def model_data
         data.each_with_index do |data, i|
-          resource = Work.new data if is_a? MetatronClient::WorkResultSet
-
+          if is_a? MetatronClient::WorkResultSet
+            resource = Work.new data
+          elsif is_a? MetatronClient::ManifestationResultSet
+            resource = Manifestation.new data
+          end
           resource.hydrate_relationships(included) if included
           self.data[i] = resource
         end

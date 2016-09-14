@@ -12,6 +12,8 @@ module Talis
     #  Talis::Authentication.client_secret = 'client_secret'
     #
     class Node < Talis::Resource
+      extend Talis::OAuthService
+
       base_uri Talis::BLUEPRINT_HOST
 
       # rubocop:disable Metrics/LineLength
@@ -32,7 +34,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def find(request_id: new_req_id, namespace:, opts:{})
+        def find(request_id: new_req_id, namespace:, opts: {})
           api_client(request_id).search_nodes(namespace, opts)
         rescue BlueprintClient::ApiError => error
           handle_response(error)
@@ -71,7 +73,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def parents(request_id: new_req_id, namespace:, type:, id:, opts:{})
+        def parents(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_parents(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
           handle_response(error)
@@ -92,7 +94,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def children(request_id: new_req_id, namespace:, type:, id:, opts:{})
+        def children(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_children(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
           handle_response(error)
@@ -113,7 +115,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def ancestors(request_id: new_req_id, namespace:, type:, id:, opts:{})
+        def ancestors(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_ancestors(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
           handle_response(error)
@@ -134,7 +136,7 @@ module Talis
         # @raise [Talis::Errors::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::Errors::ServerCommunicationError] for network issues.
-        def descendants(request_id: new_req_id, namespace:, type:, id:, opts:{})
+        def descendants(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_descendants(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
           handle_response(error)

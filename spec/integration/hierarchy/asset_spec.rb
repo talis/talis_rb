@@ -17,32 +17,30 @@ describe Talis::Hierarchy::Asset do
   context 'retrieving assets' do
     it 'returns a single asset' do
       asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                          type: 'textbook',
-                                          id: '0123456789'
-                                         )
+                                          type: 'textbooks',
+                                          id: '0123456789')
 
       expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
       expect(asset.id).to eq '0123456789'
-      expect(asset.type).to eq 'textbook'
+      expect(asset.type).to eq 'textbooks'
     end
 
     it 'returns nil when the asset is not found' do
       asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                          type: 'textbook',
-                                          id: 'notfound'
-                                         )
+                                          type: 'textbooks',
+                                          id: 'notfound')
 
       expect(asset).to be_nil
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/assets/textbook/0123456789}).to_return(
+      stub_request(:get, %r{1/rubytest/assets/textbooks/0123456789}).to_return(
         status: [400]
       )
 
       opts = {
         namespace: namespace,
-        type: 'textbook',
+        type: 'textbooks',
         id: '0123456789'
       }
       expected_error = Talis::Errors::ClientError
@@ -51,13 +49,13 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/assets/textbook/0123456789}).to_return(
+      stub_request(:get, %r{1/rubytest/assets/textbooks/0123456789}).to_return(
         status: [500]
       )
 
       opts = {
         namespace: namespace,
-        type: 'textbook',
+        type: 'textbooks',
         id: '0123456789'
       }
       expected_error = Talis::Errors::ServerError
@@ -70,7 +68,7 @@ describe Talis::Hierarchy::Asset do
 
       opts = {
         namespace: namespace,
-        type: 'textbook',
+        type: 'textbooks',
         id: '0123456789'
       }
       expected_error = Talis::Errors::ServerCommunicationError
@@ -84,7 +82,7 @@ describe Talis::Hierarchy::Asset do
 
       opts = {
         namespace: namespace,
-        type: 'textbook',
+        type: 'textbooks',
         id: '0123456789'
       }
       error = Talis::Errors::ClientError
@@ -97,34 +95,32 @@ describe Talis::Hierarchy::Asset do
   context 'searching assets by node' do
     it 'returns all assets belonging to a node when no options are given' do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
-                                                    id: 'xyz'
-                                                   )
+                                                    type: 'modules',
+                                                    id: 'xyz')
       asset = assets.last
 
       expect(assets.size).to eq 5
       expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
       expect(asset.id).to eq '0123456789'
-      expect(asset.type).to eq 'textbook'
+      expect(asset.type).to eq 'textbooks'
     end
 
     it 'returns an empty array when no assets are found' do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
-                                                    id: 'notfound'
-                                                   )
+                                                    type: 'modules',
+                                                    id: 'notfound')
 
       expect(assets).to eq []
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:get, %r{1/rubytest/nodes/module/xyz/assets}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/modules/xyz/assets}).to_return(
         status: [400]
       )
 
       opts = {
         namespace: namespace,
-        type: 'module',
+        type: 'modules',
         id: 'xyz'
       }
       error = Talis::Errors::ClientError
@@ -133,13 +129,13 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:get, %r{1/rubytest/nodes/module/xyz/assets}).to_return(
+      stub_request(:get, %r{1/rubytest/nodes/modules/xyz/assets}).to_return(
         status: [500]
       )
 
       opts = {
         namespace: namespace,
-        type: 'module',
+        type: 'modules',
         id: 'xyz'
       }
       error = Talis::Errors::ServerError
@@ -152,7 +148,7 @@ describe Talis::Hierarchy::Asset do
 
       opts = {
         namespace: namespace,
-        type: 'module',
+        type: 'modules',
         id: 'xyz'
       }
       error = Talis::Errors::ServerCommunicationError
@@ -166,7 +162,7 @@ describe Talis::Hierarchy::Asset do
 
       opts = {
         namespace: namespace,
-        type: 'module',
+        type: 'modules',
         id: 'xyz'
       }
       err = Talis::Errors::ClientError
@@ -178,17 +174,16 @@ describe Talis::Hierarchy::Asset do
 
     it 'can filter assets by the given property' do
       opts = {
-        filter_asset_type: ['digitisation']
+        filter_asset_type: ['digitisations']
       }
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
+                                                    type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
 
       expect(assets.size).to eq 3
       assets.each do |asset|
-        expect(asset.type).to eq 'digitisation'
+        expect(asset.type).to eq 'digitisations'
       end
     end
 
@@ -197,10 +192,9 @@ describe Talis::Hierarchy::Asset do
         limit: 1
       }
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
+                                                    type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
 
       expect(assets.size).to eq 1
     end
@@ -210,39 +204,37 @@ describe Talis::Hierarchy::Asset do
         offset: 1
       }
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
+                                                    type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
       asset = assets.first
 
       expect(asset.id).to eq '123'
-      expect(asset.type).to eq 'digitisation'
+      expect(asset.type).to eq 'digitisations'
     end
 
     it 'can apply multiple search options' do
       opts = {
-        filter_asset_type: ['digitisation'],
+        filter_asset_type: ['digitisations'],
         offset: 1
       }
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                    type: 'module',
+                                                    type: 'modules',
                                                     id: 'xyz',
-                                                    opts: opts
-                                                   )
+                                                    opts: opts)
       asset = assets.first
 
       expect(asset.id).to eq '456'
-      expect(asset.type).to eq 'digitisation'
+      expect(asset.type).to eq 'digitisations'
     end
   end
 
   context 'creating assets' do
     let(:asset) do
-      node = OpenStruct.new(id: 'xyz', type: 'module')
+      node = OpenStruct.new(id: 'xyz', type: 'modules')
       options = {
         namespace: namespace,
-        type: 'note',
+        type: 'notes',
         id: '999',
         node: node
       }
@@ -251,31 +243,29 @@ describe Talis::Hierarchy::Asset do
 
     it 'saves a valid asset' do
       expected_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                   type: 'note',
-                                                   id: '999'
-                                                  )
+                                                   type: 'notes',
+                                                   id: '999')
       expect(expected_asset).to be_nil
 
       asset.save
 
       created_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                  type: 'note',
-                                                  id: '999'
-                                                 )
+                                                  type: 'notes',
+                                                  id: '999')
 
       expect(created_asset.id).to eq '999'
-      expect(created_asset.type).to eq 'note'
+      expect(created_asset.type).to eq 'notes'
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:put, %r{1/rubytest/nodes/module/xyz/assets/note/999})
+      stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [400])
 
       expect { asset.save }.to raise_error Talis::Errors::ClientError
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:put, %r{1/rubytest/nodes/module/xyz/assets/note/999})
+      stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [500])
 
       expect { asset.save }.to raise_error Talis::Errors::ServerError
@@ -299,10 +289,10 @@ describe Talis::Hierarchy::Asset do
 
   context 'updating assets' do
     let(:asset) do
-      node = OpenStruct.new(id: 'xyz', type: 'module')
+      node = OpenStruct.new(id: 'xyz', type: 'modules')
       options = {
         namespace: namespace,
-        type: 'note',
+        type: 'notes',
         id: '999',
         node: node
       }
@@ -312,41 +302,37 @@ describe Talis::Hierarchy::Asset do
     it 'should update a valid asset' do
       asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                   type: 'note',
-                                                   id: '999'
-                                                  )
+                                                   type: 'notes',
+                                                   id: '999')
       expect(existing_asset.attributes).to eq({})
 
       existing_asset.attributes = { test: 'attribute' }
       existing_asset.update
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                  type: 'note',
-                                                  id: '999'
-                                                 )
+                                                  type: 'notes',
+                                                  id: '999')
       expect(updated_asset.attributes[:test]).to eq 'attribute'
     end
 
     it 'should update a valid asset without attributes' do
       asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                   type: 'note',
-                                                   id: '999'
-                                                  )
+                                                   type: 'notes',
+                                                   id: '999')
       expect(existing_asset.attributes).to eq({})
 
-      existing_asset.type = 'list'
+      existing_asset.type = 'lists'
       existing_asset.update
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
-                                                  type: 'list',
-                                                  id: '999'
-                                                 )
+                                                  type: 'lists',
+                                                  id: '999')
       expect(updated_asset).not_to be_nil
     end
 
     it 'raises an error when the server responds with a client error' do
-      stub_request(:put, %r{1/rubytest/assets/note/999}).to_return(
+      stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [400]
       )
 
@@ -354,7 +340,7 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'raises an error when the server responds with a server error' do
-      stub_request(:put, %r{1/rubytest/assets/note/999}).to_return(
+      stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [500]
       )
 
@@ -381,12 +367,12 @@ describe Talis::Hierarchy::Asset do
 
   def assets
     {
-      'aaa-bbb-ccc' => 'list',
-      '123' => 'digitisation',
-      '456' => 'digitisation',
-      '789' => 'digitisation',
-      '0123456789' => 'textbook',
-      '999' => 'note'
+      'aaa-bbb-ccc' => 'lists',
+      '123' => 'digitisations',
+      '456' => 'digitisations',
+      '789' => 'digitisations',
+      '0123456789' => 'textbooks',
+      '999' => 'notes'
     }
   end
 
@@ -399,8 +385,8 @@ describe Talis::Hierarchy::Asset do
         # Asset probably didn't exist, this is OK
         puts "could not remove asset #{type}/#{id}: #{error.inspect}"
       end
-      assets_api_client.add_asset_to_node(namespace, 'module', 'xyz', type, id)
-      assets_api_client.delete_asset(namespace, '999', 'note')
+      assets_api_client.add_asset_to_node(namespace, 'modules', 'xyz', type, id)
+      assets_api_client.delete_asset(namespace, '999', 'notes')
     end
   end
 
