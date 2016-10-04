@@ -43,6 +43,7 @@ module Talis
         def post_event(request_id, payload)
           post('/1/events',
                headers: {
+                 'Content-Type' => 'application/json',
                  'X-Request-Id' => request_id,
                  'Authorization' => "Bearer #{token}"
                },
