@@ -23,6 +23,10 @@ def blueprint_base_uri
   ENV.fetch('BLUEPRINT_TEST_HOST', Talis::BLUEPRINT_HOST)
 end
 
+def echo_base_uri
+  ENV.fetch('ECHO_TEST_HOST', Talis::ECHO_HOST)
+end
+
 def metatron_base_uri
   ENV.fetch('METATRON_TEST_HOST', Talis::METATRON_HOST)
 end
