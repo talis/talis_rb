@@ -30,10 +30,10 @@ module Talis
         #       meta: { offset: 0, count: 20, limit: 5 }
         #     }
         #  where nodes are of type BlueprintClient::Node
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the search failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, namespace:, opts: {})
           api_client(request_id).search_nodes(namespace, opts)
         rescue BlueprintClient::ApiError => error
@@ -46,16 +46,16 @@ module Talis
         # @param type [String] the type of node to fetch.
         # @param id [String] the ID of the node to fetch.
         # @return BlueprintClient::Node or nil if the node cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def get(request_id: new_req_id, namespace:, type:, id:)
           api_client(request_id).get_node(namespace, id, type).data
         rescue BlueprintClient::ApiError => error
           begin
             handle_response(error)
-          rescue Talis::Errors::NotFoundError
+          rescue Talis::NotFoundError
             nil
           end
         end
@@ -69,10 +69,10 @@ module Talis
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#get_parents}
         # @return BlueprintClient::Node or nil if the node cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def parents(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_parents(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
@@ -90,10 +90,10 @@ module Talis
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#get_children}
         # @return BlueprintClient::Node or nil if the node cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def children(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_children(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
@@ -111,10 +111,10 @@ module Talis
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#get_ancestors}
         # @return BlueprintClient::Node or nil if the node cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def ancestors(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_ancestors(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error
@@ -132,10 +132,10 @@ module Talis
         # @param opts [Hash] ({}) optional filter and pagination criteria.
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#get_descendants}
         # @return BlueprintClient::Node or nil if the node cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def descendants(request_id: new_req_id, namespace:, type:, id:, opts: {})
           api_client(request_id).get_descendants(id, namespace, type, opts).data
         rescue BlueprintClient::ApiError => error

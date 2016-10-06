@@ -19,9 +19,9 @@ module Talis
         elsif response.code >= 400 && response.code < 500
           build_client_error(response)
         elsif response.code >= 500
-          raise Talis::Errors::ServerError
+          raise Talis::ServerError
         else
-          raise Talis::Errors::ServerCommunicationError
+          raise Talis::ServerCommunicationError
         end
       end
 
@@ -42,9 +42,9 @@ module Talis
       private
 
       def build_client_error(response)
-        raise Talis::Errors::NotFoundError if response.code == 404
+        raise Talis::NotFoundError if response.code == 404
         error_description = safe_error_description(response)
-        raise Talis::Errors::ClientError, error_description
+        raise Talis::ClientError, error_description
       end
 
       def safe_error_description(response)

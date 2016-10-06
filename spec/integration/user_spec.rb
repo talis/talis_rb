@@ -35,7 +35,7 @@ describe Talis::User do
       Talis::Authentication.client_id = 'ruby-client-test'
       Talis::Authentication.client_secret = 'ruby-client-test'
 
-      expected_error = Talis::Errors::ClientError
+      expected_error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::User.find(guid: guid) }.to raise_error expected_error, msg

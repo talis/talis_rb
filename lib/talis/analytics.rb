@@ -20,10 +20,10 @@ module Talis
     #  contain any key-value pair of custom data. All other keys will be
     #  ignored.
     # @param request_id [String] ('uuid') unique ID for the remote request.
-    # @raise [Talis::Errors::ClientError] if the request was invalid.
-    # @raise [Talis::Errors::ServerError] if the search failed on the
+    # @raise [Talis::ClientError] if the request was invalid.
+    # @raise [Talis::ServerError] if the search failed on the
     #   server.
-    # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+    # @raise [Talis::ServerCommunicationError] for network issues.
     def send_analytics_event(event, request_id: nil)
       Event.create(request_id: request_id, event: event)
     end

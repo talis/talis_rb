@@ -1,6 +1,4 @@
 module Talis
-  module Errors
-    class ServerCommunicationError < StandardError
-    end
+  class ServerCommunicationError < Talis::Error
   end
 end

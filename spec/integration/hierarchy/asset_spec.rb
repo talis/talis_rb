@@ -43,7 +43,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      expected_error = Talis::Errors::ClientError
+      expected_error = Talis::ClientError
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error expected_error
     end
@@ -58,7 +58,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      expected_error = Talis::Errors::ServerError
+      expected_error = Talis::ServerError
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error expected_error
     end
@@ -71,7 +71,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error expected_error
     end
@@ -85,7 +85,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error error, msg
@@ -123,7 +123,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
@@ -138,7 +138,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      error = Talis::Errors::ServerError
+      error = Talis::ServerError
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
@@ -151,7 +151,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      error = Talis::Errors::ServerCommunicationError
+      error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
@@ -165,7 +165,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      err = Talis::Errors::ClientError
+      err = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error err,
@@ -261,19 +261,19 @@ describe Talis::Hierarchy::Asset do
       stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [400])
 
-      expect { asset.save }.to raise_error Talis::Errors::ClientError
+      expect { asset.save }.to raise_error Talis::ClientError
     end
 
     it 'raises an error when the server responds with a server error' do
       stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [500])
 
-      expect { asset.save }.to raise_error Talis::Errors::ServerError
+      expect { asset.save }.to raise_error Talis::ServerError
     end
 
     it 'raises an error when there is a problem talking to the server' do
       Talis::Hierarchy::Asset.base_uri('http://foo')
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
 
       expect { asset.save }.to raise_error expected_error
     end
@@ -283,7 +283,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.save }.to raise_error Talis::Errors::ClientError, message
+      expect { asset.save }.to raise_error Talis::ClientError, message
     end
   end
 
@@ -336,7 +336,7 @@ describe Talis::Hierarchy::Asset do
         status: [400]
       )
 
-      expect { asset.update }.to raise_error Talis::Errors::ClientError
+      expect { asset.update }.to raise_error Talis::ClientError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -344,12 +344,12 @@ describe Talis::Hierarchy::Asset do
         status: [500]
       )
 
-      expect { asset.update }.to raise_error Talis::Errors::ServerError
+      expect { asset.update }.to raise_error Talis::ServerError
     end
 
     it 'raises an error when there is a problem talking to the server' do
       Talis::Hierarchy::Asset.base_uri('http://foo')
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
 
       expect { asset.update }.to raise_error expected_error
     end
@@ -359,7 +359,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.update }.to raise_error Talis::Errors::ClientError, message
+      expect { asset.update }.to raise_error Talis::ClientError, message
     end
   end
 

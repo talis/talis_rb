@@ -73,7 +73,7 @@ module Talis
                          'Authorization' => "Bearer #{token}"
                        })
         new(extract_user_data(handle_response(response)))
-      rescue Talis::Errors::NotFoundError
+      rescue Talis::NotFoundError
         nil
       end
 

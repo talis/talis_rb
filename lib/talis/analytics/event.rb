@@ -22,10 +22,10 @@ module Talis
         #  Other valid keys include: timestamp, user and props. Props can
         #  contain any key-value pair of custom data. All other keys will be
         #  ignored.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the search failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def create(request_id: new_req_id, event:)
           request_id = new_req_id unless request_id
           validate_event event
@@ -34,7 +34,7 @@ module Talis
             response = post_event(request_id, payload)
             handle_response(response, 204)
           rescue SocketError
-            raise Talis::Errors::ServerCommunicationError
+            raise Talis::ServerCommunicationError
           end
         end
 

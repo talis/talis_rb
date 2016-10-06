@@ -1,6 +1,4 @@
 module Talis
-  module Errors
-    class AuthenticationFailedError < StandardError
-    end
+  class AuthenticationFailedError < Talis::Error
   end
 end

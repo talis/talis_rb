@@ -19,13 +19,13 @@ describe Talis::Authentication::Token do
     it 'raises the correct error when the server responds with an error' do
       stub_request(:post, %r{oauth/tokens}).to_return(status: [500])
 
-      expect { generate_token }.to raise_error Talis::Errors::ServerError
+      expect { generate_token }.to raise_error Talis::ServerError
     end
 
     it 'raises the correct error when the response is an unknown error' do
       stub_request(:post, %r{oauth/tokens}).to_return(status: [0])
 
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
       expect { generate_token }.to raise_error expected_error
     end
   end
@@ -256,7 +256,7 @@ describe Talis::Authentication::Token do
 
       stub_request(:get, %r{oauth/keys}).to_return(status: [500])
 
-      expected_error = Talis::Errors::ServerError
+      expected_error = Talis::ServerError
       expect { token.validate }.to raise_error expected_error
     end
   end
@@ -308,7 +308,7 @@ describe Talis::Authentication::Token do
 
       stub_request(:get, %r{oauth/tokens}).to_return(status: [503])
 
-      expected_error = Talis::Errors::ServerError
+      expected_error = Talis::ServerError
       expect { token.validate(required_scope) }.to raise_error expected_error
     end
 

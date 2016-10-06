@@ -43,7 +43,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::Errors::ClientError
+      expected_error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error
     end
@@ -58,7 +58,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::Errors::ServerError
+      expected_error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error
     end
@@ -71,7 +71,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error
     end
@@ -85,7 +85,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::Errors::ClientError
+      expected_error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error,
@@ -119,7 +119,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         namespace: namespace
       }
-      expected_error = Talis::Errors::ClientError
+      expected_error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error expected_error
     end
@@ -130,7 +130,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         namespace: namespace
       }
-      expected_error = Talis::Errors::ServerError
+      expected_error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error expected_error
     end
@@ -141,7 +141,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         namespace: namespace
       }
-      expected_error = Talis::Errors::ServerCommunicationError
+      expected_error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error expected_error
     end
@@ -153,7 +153,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         namespace: namespace
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error error, msg
@@ -247,7 +247,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error
     end
@@ -262,7 +262,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ServerError
+      error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error
     end
@@ -275,7 +275,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ServerCommunicationError
+      error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error
     end
@@ -289,7 +289,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error,
@@ -350,7 +350,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error
     end
@@ -364,7 +364,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::Errors::ServerError
+      error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error
     end
@@ -377,7 +377,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::Errors::ServerCommunicationError
+      error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error
     end
@@ -391,7 +391,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error,
@@ -454,7 +454,7 @@ describe Talis::Hierarchy::Node do
         type: 'courses',
         id: 'stuv'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error
     end
@@ -469,7 +469,7 @@ describe Talis::Hierarchy::Node do
         type: 'courses',
         id: 'stuv'
       }
-      error = Talis::Errors::ServerError
+      error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error
     end
@@ -482,7 +482,7 @@ describe Talis::Hierarchy::Node do
         type: 'course',
         id: 'stuv'
       }
-      error = Talis::Errors::ServerCommunicationError
+      error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error
     end
@@ -496,7 +496,7 @@ describe Talis::Hierarchy::Node do
         type: 'courses',
         id: 'stuv'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error,
@@ -556,7 +556,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
 
       expect { Talis::Hierarchy::Node.descendants(opts) }.to raise_error error
     end
@@ -570,7 +570,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ServerError
+      error = Talis::ServerError
 
       expect { Talis::Hierarchy::Node.descendants(opts) }.to raise_error error
     end
@@ -583,7 +583,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ServerCommunicationError
+      error = Talis::ServerCommunicationError
 
       expect { Talis::Hierarchy::Node.descendants(opts) }.to raise_error error
     end
@@ -597,7 +597,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::Errors::ClientError
+      error = Talis::ClientError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.descendants(opts) }.to raise_error error,

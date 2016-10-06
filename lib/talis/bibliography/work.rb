@@ -37,10 +37,10 @@ module Talis
         #     }
         #  where works are of type Talis::Bibliography::Work, which are also available
         # directly via the Enumerable methods: each, find, find_all, first, last
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the search failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, query:, offset: 0, limit: 20, include: [])
           api_client(request_id).work(token, query, limit, offset,
                                       include: include)
@@ -48,7 +48,7 @@ module Talis
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
-          rescue Talis::Errors::NotFoundError
+          rescue Talis::NotFoundError
             empty_result_set(MetatronClient::WorkResultSet,
                              offset: offset, limit: limit, count: 0)
           end
@@ -58,16 +58,16 @@ module Talis
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param id [String] the ID of the work to fetch.
         # @return Talis::Bibliography::Work or nil if the work cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def get(request_id: new_req_id, id:)
           new api_client(request_id).works_work_id_assets_get(id, token).data
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
-          rescue Talis::Errors::NotFoundError
+          rescue Talis::NotFoundError
             nil
           end
         end

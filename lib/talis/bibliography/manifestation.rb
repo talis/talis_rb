@@ -35,17 +35,17 @@ module Talis
         #     }
         #  where manifestations are of type Talis::Bibliography::Manifestation, which are also available
         # directly via the Enumerable methods: each, find, find_all, first, last
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the search failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def find(request_id: new_req_id, opts: {})
           api_client(request_id).manifestation(token, opts)
                                 .extend(ResultSet).hydrate
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
-          rescue Talis::Errors::NotFoundError
+          rescue Talis::NotFoundError
             empty_result_set(MetatronClient::ManifestationResultSet, count: 0)
           end
         end
@@ -54,16 +54,16 @@ module Talis
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param id [String] the ID of the work to fetch.
         # @return Talis::Bibliography::Work or nil if the work cannot be found.
-        # @raise [Talis::Errors::ClientError] if the request was invalid.
-        # @raise [Talis::Errors::ServerError] if the fetch failed on the
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def get(request_id: new_req_id, id:)
           new api_client(request_id).get_manifestation(token, id).data
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
-          rescue Talis::Errors::NotFoundError
+          rescue Talis::NotFoundError
             nil
           end
         end

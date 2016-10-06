@@ -22,7 +22,7 @@ When(/^I attempt to authenticate$/) do
   begin
     @talis = Talis.new(host: 'http://persona')
     @authenticated = true
-  rescue Talis::Errors::AuthenticationFailedError
+  rescue Talis::AuthenticationFailedError
     fail_with 'authentication failed'
   end
 end

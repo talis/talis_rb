@@ -45,9 +45,9 @@ module Talis
       #   within the token for validation to pass. If false, only one matching
       #   scope is required.
       # @return [Symbol, Nil] nil iff the token is valid else a symbol error.
-      # @raise [Talis::Errors::ServerError] if the sever cannot validate the
+      # @raise [Talis::ServerError] if the sever cannot validate the
       #   scope.
-      # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+      # @raise [Talis::ServerCommunicationError] for network issues.
       def validate(request_id: self.class.new_req_id, scopes: [], all: true)
         decoded = JWT.decode(@jwt, p_key(request_id), true, algorithm: 'RS256')
         validate_scopes(request_id, scopes, decoded[0], all)
@@ -57,7 +57,7 @@ module Talis
         return :invalid_token
       rescue NoMethodError
         return :invalid_key
-      rescue Talis::Errors::ClientError
+      rescue Talis::ClientError
         :insufficient_scope
       end
 
@@ -119,11 +119,11 @@ module Talis
         # @param client_secret [String] secret belonging to the client.
         # @param host [String] Optional persona host override for service
         # @return [Talis::Authentication::Token] the generated or cached token.
-        # @raise [Talis::Errors::ClientError] if the client ID/secret are
+        # @raise [Talis::ClientError] if the client ID/secret are
         #   invalid.
-        # @raise [Talis::Errors::ServerError] if the generation failed on the
+        # @raise [Talis::ServerError] if the generation failed on the
         #   server.
-        # @raise [Talis::Errors::ServerCommunicationError] for network issues.
+        # @raise [Talis::ServerCommunicationError] for network issues.
         def generate(request_id: new_req_id, client_id:, client_secret:,
                      host: base_uri)
           token = cached_token(client_id, client_secret, host)
@@ -171,7 +171,7 @@ module Talis
                  grant_type: 'client_credentials'
                })
         rescue
-          raise Talis::Errors::ServerCommunicationError
+          raise Talis::ServerCommunicationError
         end
       end
     end

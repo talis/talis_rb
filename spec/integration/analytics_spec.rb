@@ -99,7 +99,7 @@ describe Talis::Analytics do
         )
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::Errors::ClientError))
+          raise_error(Talis::ClientError))
       end
 
       it 'raises an error when the server responds with a server error' do
@@ -108,14 +108,14 @@ describe Talis::Analytics do
         )
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::Errors::ServerError))
+          raise_error(Talis::ServerError))
       end
 
       it 'raises an error when there is a problem talking to the server' do
         Talis::Analytics::Event.base_uri('http://foo')
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::Errors::ServerCommunicationError))
+          raise_error(Talis::ServerCommunicationError))
       end
 
       it 'raises an error when the client credentials are invalid' do
@@ -125,7 +125,7 @@ describe Talis::Analytics do
         message = 'The client credentials are invalid'
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::Errors::ClientError, message))
+          raise_error(Talis::ClientError, message))
       end
     end
   end

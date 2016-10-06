@@ -15,7 +15,7 @@ module Talis
         response = authenticate!
         body = JSON.parse response.body
         @scopes = body['scope']
-        raise Talis::Errors::AuthenticationFailedError unless
+        raise Talis::AuthenticationFailedError unless
             response.code == 200
       end
 

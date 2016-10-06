@@ -1,9 +1,7 @@
 module Talis
-  module Errors
-    class ClientError < StandardError
-    end
+  class ClientError < Talis::Error
+  end
 
-    class NotFoundError < ClientError
-    end
+  class NotFoundError < ClientError
   end
 end
