@@ -363,6 +363,65 @@ describe Talis::Hierarchy::Asset do
     end
   end
 
+  context 'deleting assets' do
+    let(:asset) do
+      node = OpenStruct.new(id: 'xyz', type: 'modules')
+      options = {
+        namespace: namespace,
+        type: 'notes',
+        id: '999',
+        node: node
+      }
+      Talis::Hierarchy::Asset.new(options)
+    end
+
+    it 'should delete a valid asset' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      expect(existing_asset).not_to be_nil
+
+      asset.delete
+      deleted_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'notes',
+                                                  id: '999')
+
+      expect(deleted_asset).to be_nil
+    end
+
+    it 'raises an error when the server responds with a client error' do
+      stub_request(:delete, %r{1/rubytest/assets/notes/999}).to_return(
+        status: [400]
+      )
+
+      expect { asset.delete }.to raise_error Talis::ClientError
+    end
+
+    it 'raises an error when the server responds with a server error' do
+      stub_request(:delete, %r{1/rubytest/assets/notes/999}).to_return(
+        status: [500]
+      )
+
+      expect { asset.delete }.to raise_error Talis::ServerError
+    end
+
+    it 'raises an error when there is a problem talking to the server' do
+      Talis::Hierarchy::Asset.base_uri('http://foo')
+      expected_error = Talis::ServerCommunicationError
+
+      expect { asset.delete }.to raise_error expected_error
+    end
+
+    it 'raises an error when the client credentials are invalid' do
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
+      message = 'The client credentials are invalid'
+
+      expect { asset.delete }.to raise_error Talis::ClientError, message
+    end
+  end
+
   private
 
   def assets

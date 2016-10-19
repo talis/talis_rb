@@ -105,8 +105,7 @@ module Talis
       # Update an existing asset.
       # @param request_id [String] ('uuid') unique ID for the remote request.
       # @raise [Talis::ClientError] if the request was invalid.
-      # @raise [Talis::ServerError] if the update failed on the
-      #   server.
+      # @raise [Talis::ServerError] if the update failed on the server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def update(request_id: self.class.new_req_id)
         body = BlueprintClient::AssetBody.new(data: {
@@ -116,6 +115,17 @@ module Talis
                                               })
         self.class.api_client(request_id).replace_asset(@namespace, @id, @type,
                                                         body: body)
+      rescue BlueprintClient::ApiError => error
+        self.class.handle_response(error)
+      end
+
+      # Delete an existing asset.
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      # @raise [Talis::ClientError] if the request was invalid.
+      # @raise [Talis::ServerError] if the delete failed on the server.
+      # @raise [Talis::ServerCommunicationError] for network issues.
+      def delete(request_id: self.class.new_req_id)
+        self.class.api_client(request_id).delete_asset(@namespace, @id, @type)
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
