@@ -151,7 +151,7 @@ module Talis
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#add_node}
         # @return [NodeBody]
         #   see {https://github.com/talis/blueprint_rb/blob/master/docs/NodeBody.md}
-        def add(request_id: new_req_id, namespace:, type:, id:, attributes: {})
+        def create(request_id: new_req_id, namespace:, type:, id:, attributes: {})
           new_node = {
             data: {
               id: id,

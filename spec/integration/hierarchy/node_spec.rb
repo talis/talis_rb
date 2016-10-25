@@ -633,10 +633,10 @@ describe Talis::Hierarchy::Node do
         'title' => 'Add a Single Node Test'
       }
 
-      node = Talis::Hierarchy::Node.add(namespace: mutated_namespace,
-                                        type: 'tests',
-                                        id: id,
-                                        attributes: attributes)
+      node = Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                           type: 'tests',
+                                           id: id,
+                                           attributes: attributes)
 
       expect(node.id).to eq id
       expect(node.type).to eq 'tests'
@@ -654,10 +654,10 @@ describe Talis::Hierarchy::Node do
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
-                                   type: 'tests',
-                                   id: id,
-                                   attributes: attributes)
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
       end
 
       expected.to raise_error Talis::ClientError
@@ -674,10 +674,10 @@ describe Talis::Hierarchy::Node do
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
-                                   type: 'tests',
-                                   id: id,
-                                   attributes: attributes)
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
       end
 
       expected.to raise_error Talis::ServerError
@@ -692,10 +692,10 @@ describe Talis::Hierarchy::Node do
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
-                                   type: 'tests',
-                                   id: id,
-                                   attributes: attributes)
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
       end
 
       expected.to raise_error Talis::ServerCommunicationError
@@ -713,10 +713,10 @@ describe Talis::Hierarchy::Node do
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
-                                   type: 'tests',
-                                   id: id,
-                                   attributes: attributes)
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
       end
 
       expected.to raise_error Talis::ClientError
