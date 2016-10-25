@@ -1,7 +1,12 @@
 require_relative '../spec_helper'
 
+def unique_id
+  SecureRandom.hex(13) + '_' + Time.now.to_i.to_s
+end
+
 describe Talis::Hierarchy::Node do
   let(:namespace) { 'rubytest' }
+  let(:append_namespace) { 'rubyappendtest' }
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::Authentication.client_id = client_id
@@ -627,21 +632,123 @@ describe Talis::Hierarchy::Node do
 
   context 'adding nodes' do
     it 'add a single node' do
+      id = 'add_single_node_' + unique_id
       node_body = {
-        'id' => 'add_single_node',
-        'attributes' => {
-          'title' => 'Add a Single Node Test'
-        },
-        'type' => 'tests'
+        'data' => {
+          'id' => id,
+          'type' => 'tests',
+          'attributes' => {
+            'title' => 'Add a Single Node Test'
+          }
+        }
       }
 
-      node = Talis::Hierarchy::Node.add(namespace: namespace,
+      node = Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
                                         body: node_body,
                                         opts: {})
 
-      expect(node.id).to eq 'add_single_node'
+      expect(node.id).to eq id
       expect(node.type).to eq 'tests'
-      expect(node.attributes.title).to eq 'Add a single Node Test'
+      expect(node.attributes.title).to eq 'Add a Single Node Test'
+    end
+
+    it 'raises an error when the server responds with a client error' do
+      stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
+        status: [400]
+      )
+
+      id = 'add_single_node_' + unique_id
+      node_body = {
+        'data' => {
+          'id' => id,
+          'type' => 'tests',
+          'attributes' => {
+            'title' => 'Add a Single Node Test'
+          }
+        }
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
+                                   body: node_body,
+                                   opts: {})
+      end
+
+      expected.to raise_error Talis::ClientError
+    end
+
+    it 'raises an error when the server responds with a server error' do
+      stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
+        status: [500]
+      )
+
+      id = 'add_single_node_' + unique_id
+      node_body = {
+        'data' => {
+          'id' => id,
+          'type' => 'tests',
+          'attributes' => {
+            'title' => 'Add a Single Node Test'
+          }
+        }
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
+                                   body: node_body,
+                                   opts: {})
+      end
+
+      expected.to raise_error Talis::ServerError
+    end
+
+    it 'raises an error when there is a problem talking to the server' do
+      Talis::Hierarchy::Node.base_uri('http://foo')
+
+      id = 'add_single_node_' + unique_id
+      node_body = {
+        'data' => {
+          'id' => id,
+          'type' => 'tests',
+          'attributes' => {
+            'title' => 'Add a Single Node Test'
+          }
+        }
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
+                                   body: node_body,
+                                   opts: {})
+      end
+
+      expected.to raise_error Talis::ServerCommunicationError
+    end
+
+    it 'raises an error when the client credentials are invalid' do
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
+
+      Talis::Hierarchy::Node.base_uri('http://foo')
+
+      id = 'add_single_node_' + unique_id
+      node_body = {
+        'data' => {
+          'id' => id,
+          'type' => 'tests',
+          'attributes' => {
+            'title' => 'Add a Single Node Test'
+          }
+        }
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
+                                   body: node_body,
+                                   opts: {})
+      end
+
+      expected.to raise_error Talis::ClientError
     end
   end
 
@@ -653,6 +760,8 @@ describe Talis::Hierarchy::Node do
     add_hierarchy = File.read("#{fixtures_dir}/add_node_hierarchy.csv")
     node_bulk_upload('rubytest', remove_hierarchy)
     node_bulk_upload('rubytest', add_hierarchy)
+    node_bulk_upload('rubyappendtest', remove_hierarchy)
+    node_bulk_upload('rubyappendtest', add_hierarchy)
   end
 
   def token
