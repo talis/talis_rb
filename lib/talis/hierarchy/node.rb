@@ -142,6 +142,17 @@ module Talis
           handle_response(error)
         end
 
+        # Add a node
+        # @param namespace_inc_global identifier namespacing the blueprint. `global` is a special namespace which references data from all blueprints in the call.
+        # @param body node
+        # @param [Hash] opts the optional parameters
+        # @return [NodeBody]
+        def add(request_id: new_req_id, namespace_inc_global:, body:, opts: {})
+          api_client(request_id).add_node(namespace_inc_global, body, opts).data
+        rescue BlueprintClient::ApiError => error
+          handle_response(error)
+        end
+
         # Exposes the underlying Blueprint nodes API client.
         # @param request_id [String] ('uuid') unique ID for remote requests.
         # @return BlueprintClient::HierarchyApi
