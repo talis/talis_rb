@@ -1,12 +1,8 @@
 require_relative '../spec_helper'
 
-def unique_id
-  SecureRandom.hex(13) + '_' + Time.now.to_i.to_s
-end
-
 describe Talis::Hierarchy::Node do
   let(:namespace) { 'rubytest' }
-  let(:append_namespace) { 'rubyappendtest' }
+  let(:mutated_namespace) { 'rubyappendtest' }
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::Authentication.client_id = client_id
@@ -631,21 +627,16 @@ describe Talis::Hierarchy::Node do
   end
 
   context 'adding nodes' do
-    it 'add a single node' do
+    it 'create a single node' do
       id = 'add_single_node_' + unique_id
-      node_body = {
-        'data' => {
-          'id' => id,
-          'type' => 'tests',
-          'attributes' => {
-            'title' => 'Add a Single Node Test'
-          }
-        }
+      attributes = {
+        'title' => 'Add a Single Node Test'
       }
 
-      node = Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
-                                        body: node_body,
-                                        opts: {})
+      node = Talis::Hierarchy::Node.add(namespace: mutated_namespace,
+                                        type: 'tests',
+                                        id: id,
+                                        attributes: attributes)
 
       expect(node.id).to eq id
       expect(node.type).to eq 'tests'
@@ -658,20 +649,15 @@ describe Talis::Hierarchy::Node do
       )
 
       id = 'add_single_node_' + unique_id
-      node_body = {
-        'data' => {
-          'id' => id,
-          'type' => 'tests',
-          'attributes' => {
-            'title' => 'Add a Single Node Test'
-          }
-        }
+      attributes = {
+        'title' => 'Add a Single Node Test'
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
-                                   body: node_body,
-                                   opts: {})
+        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
+                                   type: 'tests',
+                                   id: id,
+                                   attributes: attributes)
       end
 
       expected.to raise_error Talis::ClientError
@@ -683,20 +669,15 @@ describe Talis::Hierarchy::Node do
       )
 
       id = 'add_single_node_' + unique_id
-      node_body = {
-        'data' => {
-          'id' => id,
-          'type' => 'tests',
-          'attributes' => {
-            'title' => 'Add a Single Node Test'
-          }
-        }
+      attributes = {
+        'title' => 'Add a Single Node Test'
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
-                                   body: node_body,
-                                   opts: {})
+        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
+                                   type: 'tests',
+                                   id: id,
+                                   attributes: attributes)
       end
 
       expected.to raise_error Talis::ServerError
@@ -706,20 +687,15 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       id = 'add_single_node_' + unique_id
-      node_body = {
-        'data' => {
-          'id' => id,
-          'type' => 'tests',
-          'attributes' => {
-            'title' => 'Add a Single Node Test'
-          }
-        }
+      attributes = {
+        'title' => 'Add a Single Node Test'
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
-                                   body: node_body,
-                                   opts: {})
+        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
+                                   type: 'tests',
+                                   id: id,
+                                   attributes: attributes)
       end
 
       expected.to raise_error Talis::ServerCommunicationError
@@ -732,20 +708,15 @@ describe Talis::Hierarchy::Node do
       Talis::Hierarchy::Node.base_uri('http://foo')
 
       id = 'add_single_node_' + unique_id
-      node_body = {
-        'data' => {
-          'id' => id,
-          'type' => 'tests',
-          'attributes' => {
-            'title' => 'Add a Single Node Test'
-          }
-        }
+      attributes = {
+        'title' => 'Add a Single Node Test'
       }
 
       expected = expect do
-        Talis::Hierarchy::Node.add(namespace_inc_global: append_namespace,
-                                   body: node_body,
-                                   opts: {})
+        Talis::Hierarchy::Node.add(namespace: mutated_namespace,
+                                   type: 'tests',
+                                   id: id,
+                                   attributes: attributes)
       end
 
       expected.to raise_error Talis::ClientError
