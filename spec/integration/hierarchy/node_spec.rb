@@ -625,6 +625,26 @@ describe Talis::Hierarchy::Node do
     end
   end
 
+  context 'adding nodes' do
+    it 'add a single node' do
+      node_body = {
+        'id' => 'add_single_node',
+        'attributes' => {
+          'title' => 'Add a Single Node Test'
+        },
+        'type' => 'tests'
+      }
+
+      node = Talis::Hierarchy::Node.add(namespace: namespace,
+                                        body: node_body,
+                                        opts: {})
+
+      expect(node.id).to eq 'add_single_node'
+      expect(node.type).to eq 'tests'
+      expect(node.attributes.title).to eq 'Add a single Node Test'
+    end
+  end
+
   private
 
   def setup_node_data
