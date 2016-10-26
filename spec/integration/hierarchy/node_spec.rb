@@ -630,7 +630,7 @@ describe Talis::Hierarchy::Node do
     it 'create a single node' do
       id = 'add_single_node_' + unique_id
       attributes = {
-        'title' => 'Add a Single Node Test'
+        title: 'Add a Single Node Test'
       }
 
       node = Talis::Hierarchy::Node.create(namespace: mutated_namespace,
@@ -641,6 +641,13 @@ describe Talis::Hierarchy::Node do
       expect(node.id).to eq id
       expect(node.type).to eq 'tests'
       expect(node.attributes.title).to eq 'Add a Single Node Test'
+
+      found_node = Talis::Hierarchy::Node.get(namespace: mutated_namespace,
+                                              type: 'tests', id: id)
+
+      expect(found_node.id).to eq node.id
+      expect(found_node.type).to eq node.type
+      expect(found_node.attributes.title).to eq node.attributes.title
     end
 
     it 'raises an error when the server responds with a client error' do
