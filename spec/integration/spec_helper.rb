@@ -41,3 +41,7 @@ RSpec.configure do |config|
     end
   end
 end
+
+def unique_id
+  SecureRandom.hex(13) + '_' + Time.now.to_i.to_s
+end

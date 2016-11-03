@@ -2,6 +2,7 @@ require_relative '../spec_helper'
 
 describe Talis::Hierarchy::Node do
   let(:namespace) { 'rubytest' }
+  let(:mutated_namespace) { 'rubyappendtest' }
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)
     Talis::Authentication.client_id = client_id
@@ -625,6 +626,110 @@ describe Talis::Hierarchy::Node do
     end
   end
 
+  context 'adding nodes' do
+    it 'create a single node' do
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        title: 'Add a Single Node Test'
+      }
+
+      node = Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                           type: 'tests',
+                                           id: id,
+                                           attributes: attributes)
+
+      expect(node.id).to eq id
+      expect(node.type).to eq 'tests'
+      expect(node.attributes.title).to eq 'Add a Single Node Test'
+
+      found_node = Talis::Hierarchy::Node.get(namespace: mutated_namespace,
+                                              type: 'tests', id: id)
+
+      expect(found_node.id).to eq node.id
+      expect(found_node.type).to eq node.type
+      expect(found_node.attributes.title).to eq node.attributes.title
+    end
+
+    it 'raises an error when the server responds with a client error' do
+      stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
+        status: [400]
+      )
+
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        'title' => 'Add a Single Node Test'
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
+      end
+
+      expected.to raise_error Talis::ClientError
+    end
+
+    it 'raises an error when the server responds with a server error' do
+      stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
+        status: [500]
+      )
+
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        'title' => 'Add a Single Node Test'
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
+      end
+
+      expected.to raise_error Talis::ServerError
+    end
+
+    it 'raises an error when there is a problem talking to the server' do
+      Talis::Hierarchy::Node.base_uri('http://foo')
+
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        'title' => 'Add a Single Node Test'
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
+      end
+
+      expected.to raise_error Talis::ServerCommunicationError
+    end
+
+    it 'raises an error when the client credentials are invalid' do
+      Talis::Authentication.client_id = 'ruby-client-test'
+      Talis::Authentication.client_secret = 'ruby-client-test'
+
+      Talis::Hierarchy::Node.base_uri('http://foo')
+
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        'title' => 'Add a Single Node Test'
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
+      end
+
+      expected.to raise_error Talis::ClientError
+    end
+  end
+
   private
 
   def setup_node_data
@@ -633,6 +738,8 @@ describe Talis::Hierarchy::Node do
     add_hierarchy = File.read("#{fixtures_dir}/add_node_hierarchy.csv")
     node_bulk_upload('rubytest', remove_hierarchy)
     node_bulk_upload('rubytest', add_hierarchy)
+    node_bulk_upload('rubyappendtest', remove_hierarchy)
+    node_bulk_upload('rubyappendtest', add_hierarchy)
   end
 
   def token

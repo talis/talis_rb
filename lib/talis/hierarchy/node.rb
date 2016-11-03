@@ -16,6 +16,18 @@ module Talis
 
       base_uri Talis::BLUEPRINT_HOST
 
+      attr_accessor :id
+      attr_accessor :type
+      attr_accessor :namespace
+      attr_accessor :attributes
+
+      def initialize(id:, type:, namespace:, attributes: {})
+        @id = id
+        @type = type
+        @namespace = namespace
+        @attributes = attributes
+      end
+
       # rubocop:disable Metrics/LineLength
       class << self
         # Search for nodes in the hierarchy for the given namespace.
@@ -142,6 +154,28 @@ module Talis
           handle_response(error)
         end
 
+        # Create a new node
+        # @param request_id [String] ('uuid') unique ID for the remote request.
+        # @param namespace [String] the namespace of hierarchy.
+        # @param type [String]
+        # @param id [String]
+        # @param attributes [Hash]
+        #   see {https://github.com/talis/blueprint_rb/blob/master/docs/HierarchyApi.md#add_node}
+        # @return [Talis::Hierarchy::Node]
+        def create(request_id: new_req_id, namespace:, type:, id:, attributes: {})
+          new_node = {
+            data: {
+              id: id,
+              type: type,
+              attributes: attributes
+            }
+          }
+
+          build(api_client(request_id).add_node(namespace, new_node, {}).data, namespace)
+        rescue BlueprintClient::ApiError => error
+          handle_response(error)
+        end
+
         # Exposes the underlying Blueprint nodes API client.
         # @param request_id [String] ('uuid') unique ID for remote requests.
         # @return BlueprintClient::HierarchyApi
@@ -166,6 +200,11 @@ module Talis
             config.host = base_uri
             config.access_token = token
           end
+        end
+
+        def build(data, namespace)
+          new(id: data.id, type: data.type, namespace: namespace,
+              attributes: data.attributes)
         end
       end
     end
