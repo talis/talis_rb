@@ -1,5 +1,5 @@
 require_relative 'hierarchy/asset'
-require_relative 'hierarchy/hierarchy_resource'
+require_relative 'hierarchy/resource'
 require_relative 'hierarchy/node'
 
 module Talis

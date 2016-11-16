@@ -13,7 +13,7 @@ module Talis
     #
     class Node < Talis::Resource
       extend Talis::OAuthService
-      include HierarchyResource
+      include Talis::Hierarchy::Resource
 
       base_uri Talis::BLUEPRINT_HOST
 
