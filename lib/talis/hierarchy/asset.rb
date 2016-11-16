@@ -106,8 +106,8 @@ module Talis
                                                 type: @type,
                                                 attributes: @attributes
                                               })
-        self.class.api_client(request_id).replace_asset(@namespace, stored_id, stored_type,
-                                                        body: body)
+        self.class.api_client(request_id).replace_asset(@namespace, stored_id,
+                                                        stored_type, body: body)
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -118,7 +118,8 @@ module Talis
       # @raise [Talis::ServerError] if the delete failed on the server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def delete(request_id: self.class.new_req_id)
-        self.class.api_client(request_id).delete_asset(@namespace, stored_id, stored_type)
+        self.class.api_client(request_id).delete_asset(@namespace, stored_id,
+                                                       stored_type)
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
