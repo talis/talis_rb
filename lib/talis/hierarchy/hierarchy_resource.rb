@@ -1,4 +1,5 @@
 module Talis
+  # Common functionality to Hierarchy resources (Node, Asset)
   module HierarchyResource
     # @return [String] The hierarchy namespace.
     attr_accessor :namespace
