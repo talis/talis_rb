@@ -13,13 +13,9 @@ module Talis
     #
     class Node < Talis::Resource
       extend Talis::OAuthService
+      include HierarchyResource
 
       base_uri Talis::BLUEPRINT_HOST
-
-      attr_accessor :id
-      attr_accessor :type
-      attr_accessor :namespace
-      attr_accessor :attributes
 
       def initialize(id:, type:, namespace:, attributes: {})
         @id = id
