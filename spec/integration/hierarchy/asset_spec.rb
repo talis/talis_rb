@@ -335,6 +335,9 @@ describe Talis::Hierarchy::Asset do
                                                   type: 'lists',
                                                   id: id)
       expect(updated_asset).not_to be_nil
+
+      # o/~ Clean up, clean up, everybody do their share o/~
+      updated_asset.delete
     end
 
     it 'raises an error when the server responds with a client error' do
