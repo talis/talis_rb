@@ -329,12 +329,41 @@ describe Talis::Hierarchy::Asset do
       expect(existing_asset.type).to eq('notes')
 
       existing_asset.type = 'lists'
+      expect(existing_asset.type).to eq('lists')
+      expect(existing_asset.stored_type).to eq('notes')
       existing_asset.update
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'lists',
                                                   id: id)
       expect(updated_asset).not_to be_nil
+
+      old_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                              type: 'notes',
+                                              id: id)
+      expect(old_asset).to be_nil
+
+      new_id = unique_id
+
+      existing_asset.id = new_id
+      existing_asset.update
+
+      updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'lists',
+                                                  id: new_id)
+      expect(updated_asset).not_to be_nil
+
+      previous_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'lists',
+                                                   id: id)
+
+      expect(previous_asset).to be_nil
+
+      original_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: id)
+
+      expect(original_asset).to be_nil
 
       # o/~ Clean up, clean up, everybody do their share o/~
       updated_asset.delete
