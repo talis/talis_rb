@@ -48,6 +48,15 @@ module Talis
       def persisted?
         !(@new_resource || @deleted)
       end
+
+      protected
+
+      def persisted(deleted = false)
+        @new_resource = false
+        @deleted = deleted
+        @original_id = id
+        @original_type = type
+      end
     end
   end
 end

@@ -76,6 +76,7 @@ module Talis
         @type = type
         @node = node
         @attributes = attributes
+        @new_resource = true
       end
 
       # Persist the asset to the hierarchy.
@@ -91,6 +92,7 @@ module Talis
                                                             @node.id,
                                                             @type,
                                                             @id)
+        persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -108,6 +110,7 @@ module Talis
                                               })
         self.class.api_client(request_id).replace_asset(@namespace, stored_id,
                                                         stored_type, body: body)
+        persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -120,6 +123,7 @@ module Talis
       def delete(request_id: self.class.new_req_id)
         self.class.api_client(request_id).delete_asset(@namespace, stored_id,
                                                        stored_type)
+        persisted(true)
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -191,8 +195,10 @@ module Talis
         private
 
         def build(data, namespace)
-          new(namespace: namespace, type: data.type, id: data.id,
-              attributes: data.attributes ? data.attributes : {})
+          asset = new(namespace: namespace, type: data.type, id: data.id,
+                      attributes: data.attributes ? data.attributes : {})
+          asset.instance_variable_set(:@new_resource, false)
+          asset
         end
 
         def configure_blueprint

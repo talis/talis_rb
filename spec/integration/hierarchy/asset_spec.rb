@@ -345,10 +345,8 @@ describe Talis::Hierarchy::Asset do
 
       new_id = unique_id
 
-      puts id
-      puts new_id
-
       existing_asset.id = new_id
+
       existing_asset.update
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
