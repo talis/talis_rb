@@ -50,7 +50,8 @@ describe Talis::Analytics do
         event = {}
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(ArgumentError, 'event must contain class and source'))
+          raise_error(ArgumentError, 'event must contain class and source')
+        )
 
         expect(a_request(:post, "#{echo_base_uri}/1/events"))
           .not_to have_been_made
@@ -99,7 +100,8 @@ describe Talis::Analytics do
         )
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ClientError))
+          raise_error(Talis::ClientError)
+        )
       end
 
       it 'raises an error when the server responds with a server error' do
@@ -108,14 +110,16 @@ describe Talis::Analytics do
         )
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ServerError))
+          raise_error(Talis::ServerError)
+        )
       end
 
       it 'raises an error when there is a problem talking to the server' do
         Talis::Analytics::Event.base_uri('http://foo')
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ServerCommunicationError))
+          raise_error(Talis::ServerCommunicationError)
+        )
       end
 
       it 'raises an error when the client credentials are invalid' do
@@ -125,7 +129,8 @@ describe Talis::Analytics do
         message = 'The client credentials are invalid'
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ClientError, message))
+          raise_error(Talis::ClientError, message)
+        )
       end
     end
   end
