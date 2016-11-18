@@ -51,9 +51,15 @@ module Talis
 
       protected
 
-      def persisted(deleted = false)
+      def mark_persisted
         @new_resource = false
-        @deleted = deleted
+        @deleted = false
+        @original_id = id
+        @original_type = type
+      end
+
+      def mark_deleted
+        @deleted = true
         @original_id = id
         @original_type = type
       end
