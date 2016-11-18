@@ -54,20 +54,13 @@ module Talis
     #  asset.save
     class Asset < Talis::Resource
       extend Talis::OAuthService
+      include Talis::Hierarchy::Resource
 
       base_uri Talis::BLUEPRINT_HOST
 
-      # @return [String] The hierarchy namespace.
-      attr_accessor :namespace
-      # @return [String] The ID of the asset.
-      attr_accessor :id
-      # @return [String] The type of asset.
-      attr_accessor :type
       # @return [BlueprintClient::Node] A node an asset can belong to.
       #   Note that an asset can belong to multiple nodes (see examples).
       attr_accessor :node
-      # @return [Hash] key-value pair attributes belonging to the asset.
-      attr_accessor :attributes
 
       # Create a non-persisted asset.
       # @param namespace [String] the namespace of the hierarchy.
@@ -83,6 +76,7 @@ module Talis
         @type = type
         @node = node
         @attributes = attributes
+        @new_resource = true
       end
 
       # Persist the asset to the hierarchy.
@@ -98,6 +92,7 @@ module Talis
                                                             @node.id,
                                                             @type,
                                                             @id)
+        mark_persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -113,8 +108,9 @@ module Talis
                                                 type: @type,
                                                 attributes: @attributes
                                               })
-        self.class.api_client(request_id).replace_asset(@namespace, @id, @type,
-                                                        body: body)
+        self.class.api_client(request_id).replace_asset(@namespace, stored_id,
+                                                        stored_type, body: body)
+        mark_persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -125,7 +121,9 @@ module Talis
       # @raise [Talis::ServerError] if the delete failed on the server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def delete(request_id: self.class.new_req_id)
-        self.class.api_client(request_id).delete_asset(@namespace, @id, @type)
+        self.class.api_client(request_id).delete_asset(@namespace, stored_id,
+                                                       stored_type)
+        mark_deleted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
       end
@@ -197,8 +195,10 @@ module Talis
         private
 
         def build(data, namespace)
-          new(namespace: namespace, type: data.type, id: data.id,
-              attributes: data.attributes ? data.attributes : {})
+          asset = new(namespace: namespace, type: data.type, id: data.id,
+                      attributes: data.attributes ? data.attributes : {})
+          asset.instance_variable_set(:@new_resource, false)
+          asset
         end
 
         def configure_blueprint

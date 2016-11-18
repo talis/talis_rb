@@ -316,19 +316,58 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'should update a valid asset without attributes' do
-      asset.save
+      id = unique_id
+      node = OpenStruct.new(id: 'xyz', type: 'modules')
+      new_asset = Talis::Hierarchy::Asset.new(namespace: namespace, node: node,
+                                              type: 'notes', id: id)
+      new_asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                    type: 'notes',
-                                                   id: '999')
+                                                   id: id)
       expect(existing_asset.attributes).to eq({})
+      expect(existing_asset.id).to eq(id)
+      expect(existing_asset.type).to eq('notes')
 
       existing_asset.type = 'lists'
+      expect(existing_asset.type).to eq('lists')
+      expect(existing_asset.stored_type).to eq('notes')
       existing_asset.update
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'lists',
-                                                  id: '999')
+                                                  id: id)
       expect(updated_asset).not_to be_nil
+
+      old_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                              type: 'notes',
+                                              id: id)
+      expect(old_asset).to be_nil
+
+      new_id = unique_id
+
+      existing_asset.id = new_id
+
+      existing_asset.update
+
+      updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'lists',
+                                                  id: new_id)
+      expect(updated_asset).not_to be_nil
+
+      previous_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'lists',
+                                                   id: id)
+
+      expect(previous_asset).to be_nil
+
+      original_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: id)
+
+      expect(original_asset).to be_nil
+
+      # o/~ Clean up, clean up, everybody do their share o/~
+      updated_asset.delete
     end
 
     it 'raises an error when the server responds with a client error' do

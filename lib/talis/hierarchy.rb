@@ -1,3 +1,4 @@
+require_relative 'hierarchy/resource'
 require_relative 'hierarchy/asset'
 require_relative 'hierarchy/node'
 
