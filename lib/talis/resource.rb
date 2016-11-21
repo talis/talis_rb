@@ -42,9 +42,19 @@ module Talis
       private
 
       def build_client_error(response)
-        raise Talis::NotFoundError if response.code == 404
-        error_description = safe_error_description(response)
-        raise Talis::ClientError, error_description
+        raise client_errors[response.code], safe_error_description(response)
+      end
+
+      def client_errors
+        errors = {
+          400 => Talis::BadRequestError,
+          401 => Talis::UnauthorizedError,
+          403 => Talis::ForbiddenError,
+          404 => Talis::NotFoundError,
+          409 => Talis::ConflictError
+        }
+        errors.default = Talis::ClientError
+        errors
       end
 
       def safe_error_description(response)

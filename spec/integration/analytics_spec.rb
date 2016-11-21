@@ -94,13 +94,13 @@ describe Talis::Analytics do
     context 'unsuccessfully' do
       let(:event) { { class: 'test.event', source: 'talis_rb.build' } }
 
-      it 'raises an error when the server responds with a client error' do
+      it 'raises an error when the server responds with a bad request error' do
         stub_request(:post, "#{echo_base_uri}/1/events").to_return(
           status: [400]
         )
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ClientError)
+          raise_error(Talis::BadRequestError)
         )
       end
 
@@ -129,7 +129,7 @@ describe Talis::Analytics do
         message = 'The client credentials are invalid'
 
         expect { @object.send_analytics_event event }.to(
-          raise_error(Talis::ClientError, message)
+          raise_error(Talis::BadRequestError, message)
         )
       end
     end

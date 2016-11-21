@@ -33,7 +33,7 @@ describe Talis::Hierarchy::Asset do
       expect(asset).to be_nil
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request error' do
       stub_request(:get, %r{1/rubytest/assets/textbooks/0123456789}).to_return(
         status: [400]
       )
@@ -43,7 +43,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error expected_error
     end
@@ -85,7 +85,7 @@ describe Talis::Hierarchy::Asset do
         type: 'textbooks',
         id: '0123456789'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Asset.get(opts) }.to raise_error error, msg
@@ -113,7 +113,7 @@ describe Talis::Hierarchy::Asset do
       expect(assets).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request error' do
       stub_request(:get, %r{1/rubytest/nodes/modules/xyz/assets}).to_return(
         status: [400]
       )
@@ -123,7 +123,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error error
     end
@@ -165,7 +165,7 @@ describe Talis::Hierarchy::Asset do
         type: 'modules',
         id: 'xyz'
       }
-      err = Talis::ClientError
+      err = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Asset.find_by_node(opts) }.to raise_error err,
@@ -257,11 +257,18 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.type).to eq 'notes'
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request error' do
       stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [400])
 
-      expect { asset.save }.to raise_error Talis::ClientError
+      expect { asset.save }.to raise_error Talis::BadRequestError
+    end
+
+    it 'raises an error when the server responds with a conflict error' do
+      stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
+        .to_return(status: [409])
+
+      expect { asset.save }.to raise_error Talis::ConflictError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -283,7 +290,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.save }.to raise_error Talis::ClientError, message
+      expect { asset.save }.to raise_error Talis::BadRequestError, message
     end
   end
 
@@ -370,12 +377,12 @@ describe Talis::Hierarchy::Asset do
       updated_asset.delete
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request error' do
       stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [400]
       )
 
-      expect { asset.update }.to raise_error Talis::ClientError
+      expect { asset.update }.to raise_error Talis::BadRequestError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -398,7 +405,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.update }.to raise_error Talis::ClientError, message
+      expect { asset.update }.to raise_error Talis::BadRequestError, message
     end
   end
 
@@ -429,12 +436,12 @@ describe Talis::Hierarchy::Asset do
       expect(deleted_asset).to be_nil
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request error' do
       stub_request(:delete, %r{1/rubytest/assets/notes/999}).to_return(
         status: [400]
       )
 
-      expect { asset.delete }.to raise_error Talis::ClientError
+      expect { asset.delete }.to raise_error Talis::BadRequestError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -457,7 +464,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.delete }.to raise_error Talis::ClientError, message
+      expect { asset.delete }.to raise_error Talis::BadRequestError, message
     end
   end
 

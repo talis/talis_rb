@@ -23,7 +23,7 @@ describe Talis::Authentication::Token do
     end
 
     it 'raises the correct error given an invalid client ID' do
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
       options = {
         client_id: 'invalid',
@@ -34,7 +34,7 @@ describe Talis::Authentication::Token do
     end
 
     it 'raises the correct error given an invalid client secret' do
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
       options = {
         client_id: client_id,

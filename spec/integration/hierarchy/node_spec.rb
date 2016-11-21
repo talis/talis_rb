@@ -34,7 +34,7 @@ describe Talis::Hierarchy::Node do
       expect(node).to be_nil
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes/colleges/abc}).to_return(
         status: [400]
       )
@@ -44,7 +44,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error
     end
@@ -86,7 +86,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.get(opts) }.to raise_error expected_error,
@@ -114,13 +114,13 @@ describe Talis::Hierarchy::Node do
       expect(nodes).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes}).to_return(status: [400])
 
       opts = {
         namespace: namespace
       }
-      expected_error = Talis::ClientError
+      expected_error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error expected_error
     end
@@ -154,7 +154,7 @@ describe Talis::Hierarchy::Node do
       opts = {
         namespace: namespace
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.find(opts) }.to raise_error error, msg
@@ -238,7 +238,7 @@ describe Talis::Hierarchy::Node do
       expect(children).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes/colleges/abc/children}).to_return(
         status: [400]
       )
@@ -248,7 +248,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error
     end
@@ -290,7 +290,7 @@ describe Talis::Hierarchy::Node do
         type: 'colleges',
         id: 'abc'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.children(opts) }.to raise_error error,
@@ -342,7 +342,7 @@ describe Talis::Hierarchy::Node do
       expect(parents).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes/departments/lmnop/parents})
         .to_return(status: [400])
 
@@ -351,7 +351,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error
     end
@@ -392,7 +392,7 @@ describe Talis::Hierarchy::Node do
         type: 'departments',
         id: 'lmnop'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.parents(opts) }.to raise_error error,
@@ -445,7 +445,7 @@ describe Talis::Hierarchy::Node do
       expect(ancestors).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes/courses/stuv/ancestors}).to_return(
         status: [400]
       )
@@ -455,7 +455,7 @@ describe Talis::Hierarchy::Node do
         type: 'courses',
         id: 'stuv'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error
     end
@@ -497,7 +497,7 @@ describe Talis::Hierarchy::Node do
         type: 'courses',
         id: 'stuv'
       }
-      error = Talis::ClientError
+      error = Talis::BadRequestError
       msg = 'The client credentials are invalid'
 
       expect { Talis::Hierarchy::Node.ancestors(opts) }.to raise_error error,
@@ -548,7 +548,7 @@ describe Talis::Hierarchy::Node do
       expect(descendants).to eq []
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:get, %r{1/rubytest/nodes/colleges/abc/descendants})
         .to_return(status: [400])
 
@@ -650,7 +650,7 @@ describe Talis::Hierarchy::Node do
       expect(found_node.attributes.title).to eq node.attributes.title
     end
 
-    it 'raises an error when the server responds with a client error' do
+    it 'raises an error when the server responds with a bad request' do
       stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
         status: [400]
       )
@@ -668,6 +668,26 @@ describe Talis::Hierarchy::Node do
       end
 
       expected.to raise_error Talis::ClientError
+    end
+
+    it 'raises an error when the server responds with a conflict error' do
+      stub_request(:post, %r{1/rubyappendtest/nodes}).to_return(
+        status: [409]
+      )
+
+      id = 'add_single_node_' + unique_id
+      attributes = {
+        'title' => 'Add a Single Node Test'
+      }
+
+      expected = expect do
+        Talis::Hierarchy::Node.create(namespace: mutated_namespace,
+                                      type: 'tests',
+                                      id: id,
+                                      attributes: attributes)
+      end
+
+      expected.to raise_error Talis::ConflictError
     end
 
     it 'raises an error when the server responds with a server error' do
