@@ -286,7 +286,7 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
 
-      asset_associated_with_node(created_asset, namespace, 'modules','xyz')
+      asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
       asset_associated_with_node(created_asset, namespace, 'modules', 'def')
     end
 
@@ -561,14 +561,9 @@ describe Talis::Hierarchy::Asset do
   end
 
   def asset_associated_with_node(asset, namespace, type, id)
-      found_assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
-                                                          type: 'modules',
-                                                          id: 'xyz')
-
-# puts "looking for #{asset.id}"
-# found_assets.each do |a|
-#   puts "#{a.id}"
-# end
-      expect(found_assets.any? {|a| a.id == asset.id}).to be true
+    found_assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                        type: type,
+                                                        id: id)
+    expect(found_assets.any? { |a| a.id == asset.id }).to be true
   end
 end
