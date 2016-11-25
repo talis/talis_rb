@@ -3,3 +3,4 @@
 ,,courses,stuv,departments:lmnop,Introduction to STUV,Elementary STUV,jacs:3456,
 ,,courses,qr,departments:lmnop,Intermediate QR,Applied QR for QRists,jacs:4567,
 ,,modules,xyz,courses:stuv,XYZ for Beginners,,,123
+,,modules,def,courses:stuv,DEF for Beginners,,,123

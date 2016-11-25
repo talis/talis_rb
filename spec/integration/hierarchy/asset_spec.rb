@@ -236,7 +236,19 @@ describe Talis::Hierarchy::Asset do
         namespace: namespace,
         type: 'notes',
         id: '999',
-        node: node
+        nodes: [node]
+      }
+      Talis::Hierarchy::Asset.new(options)
+    end
+
+    let(:asset_with_multiple_nodes) do
+      node1 = OpenStruct.new(id: 'xyz', type: 'modules')
+      node2 = OpenStruct.new(id: 'def', type: 'modules')
+      options = {
+        namespace: namespace,
+        type: 'notes',
+        id: '999',
+        nodes: [node1, node2]
       }
       Talis::Hierarchy::Asset.new(options)
     end
@@ -255,6 +267,36 @@ describe Talis::Hierarchy::Asset do
 
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
+
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+    end
+
+    it 'saves a valid asset with multiple nodes' do
+      expected_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      expect(expected_asset).to be_nil
+
+      asset_with_multiple_nodes.save
+
+      created_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'notes',
+                                                  id: '999')
+
+      expect(created_asset.id).to eq '999'
+      expect(created_asset.type).to eq 'notes'
+
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
     end
 
     it 'raises an error when the server responds with a bad request error' do
@@ -262,13 +304,6 @@ describe Talis::Hierarchy::Asset do
         .to_return(status: [400])
 
       expect { asset.save }.to raise_error Talis::BadRequestError
-    end
-
-    it 'raises an error when the server responds with a conflict error' do
-      stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
-        .to_return(status: [409])
-
-      expect { asset.save }.to raise_error Talis::ConflictError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -301,7 +336,7 @@ describe Talis::Hierarchy::Asset do
         namespace: namespace,
         type: 'notes',
         id: '999',
-        node: node
+        nodes: [node]
       }
       Talis::Hierarchy::Asset.new(options)
     end
@@ -325,7 +360,8 @@ describe Talis::Hierarchy::Asset do
     it 'should update a valid asset without attributes' do
       id = unique_id
       node = OpenStruct.new(id: 'xyz', type: 'modules')
-      new_asset = Talis::Hierarchy::Asset.new(namespace: namespace, node: node,
+      new_asset = Talis::Hierarchy::Asset.new(namespace: namespace,
+                                              nodes: [node],
                                               type: 'notes', id: id)
       new_asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
@@ -377,6 +413,45 @@ describe Talis::Hierarchy::Asset do
       updated_asset.delete
     end
 
+    it 'should update a valid asset with a new node' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      node2 = OpenStruct.new(id: 'def', type: 'modules')
+      existing_asset.nodes = [node2]
+      existing_asset.save
+
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
+    end
+
+    it 'should update an asset but not error on existing nodes' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      existing_node = OpenStruct.new(id: 'xyz', type: 'modules')
+      new_node = OpenStruct.new(id: 'def', type: 'modules')
+      existing_asset.nodes = [existing_node, new_node]
+      existing_asset.save
+
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
+    end
+
     it 'raises an error when the server responds with a bad request error' do
       stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [400]
@@ -416,7 +491,7 @@ describe Talis::Hierarchy::Asset do
         namespace: namespace,
         type: 'notes',
         id: '999',
-        node: node
+        nodes: [node]
       }
       Talis::Hierarchy::Asset.new(options)
     end
@@ -524,5 +599,13 @@ describe Talis::Hierarchy::Asset do
     request = Net::HTTP.new(uri.host, uri.port)
     request.use_ssl = (uri.scheme == 'https')
     expect(request.post(uri.path, csv, headers).code).to eq '204'
+  end
+
+  def assert_asset_associated_with_node(asset, namespace, type, id)
+    found_assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
+                                                        type: type,
+                                                        id: id)
+    match = found_assets.any? { |a| a.id == asset.id && a.type == asset.type }
+    expect(match).to be true
   end
 end
