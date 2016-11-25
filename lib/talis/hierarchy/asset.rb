@@ -22,7 +22,7 @@ module Talis
     #    namespace: 'mynamespace',
     #    type: 'list',
     #    id: '1',
-    #    node: node
+    #    nodes: [ node ]
     #  }
     #  asset = Talis::Hierarchy::Asset.new(asset_options)
     #  asset.save # Will raise an exception if this fails
@@ -45,12 +45,9 @@ module Talis
     #    namespace: 'mynamespace',
     #    type: 'list',
     #    id: '1',
-    #    node: node
+    #    nodes: [ node1, node2 ]
     #  }
     #  asset = Talis::Hierarchy::Asset.new(asset_options)
-    #  asset.save
-    #  # Associates the asset with an additional node
-    #  asset.node = node2
     #  asset.save
     class Asset < Talis::Resource
       extend Talis::OAuthService
@@ -58,23 +55,23 @@ module Talis
 
       base_uri Talis::BLUEPRINT_HOST
 
-      # @return [BlueprintClient::Node] A node an asset can belong to.
-      #   Note that an asset can belong to multiple nodes (see examples).
-      attr_accessor :node
+      # @return [Array<BlueprintClient::Node>] An array of nodes an
+      #   asset can belong to.
+      attr_accessor :nodes
 
       # Create a non-persisted asset.
       # @param namespace [String] the namespace of the hierarchy.
       # @param type [String] the type of asset.
       # @param id [String] the ID of the asset.
-      # @param node [BlueprintClient::Node] a node an asset can belong to.
-      #   Note that an asset can belong to multiple nodes (see examples).
+      # @param nodes [Array<BlueprintClient::Node>] an array of nodes
+      #   an asset can belong to.
       # @param attributes [Hash]({}) key-value pair attributes belonging to the
       #   asset.
-      def initialize(namespace:, type:, id:, node: nil, attributes: {})
+      def initialize(namespace:, type:, id:, nodes: [], attributes: {})
         @namespace = namespace
         @id = id
         @type = type
-        @node = node
+        @nodes = nodes
         @attributes = attributes
         @new_resource = true
       end
@@ -87,11 +84,13 @@ module Talis
       #   server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def save(request_id: self.class.new_req_id)
-        self.class.api_client(request_id).add_asset_to_node(@namespace,
-                                                            @node.type,
-                                                            @node.id,
-                                                            @type,
-                                                            @id)
+        @nodes.each do |node|
+          self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                              node.type,
+                                                              node.id,
+                                                              @type,
+                                                              @id)
+        end
         mark_persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
