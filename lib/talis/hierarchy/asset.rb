@@ -83,24 +83,8 @@ module Talis
       #   server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def save(request_id: self.class.new_req_id)
-        if @new_resource
-          @nodes.each do |node|
-            self.class.api_client(request_id).add_asset_to_node(@namespace,
-                                                                node.type,
-                                                                node.id,
-                                                                @type,
-                                                                @id)
-          end
-        end
-        if !persisted? || modified?
-          body = BlueprintClient::AssetBody.new(data: {
-                                                  id: @id,
-                                                  type: @type,
-                                                  attributes: @attributes
-                                                })
-          self.class.api_client(request_id).replace_asset(@namespace, stored_id,
-                                                          stored_type, body: body)
-        end
+        save_nodes request_id if @new_resource
+        save_asset request_id if !persisted? || modified?
         mark_persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
@@ -117,6 +101,32 @@ module Talis
         mark_deleted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
+      end
+
+      private
+
+      # Internal part of save method. Saves the nodes
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      def save_nodes(request_id)
+        @nodes.each do |node|
+          self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                              node.type,
+                                                              node.id,
+                                                              @type,
+                                                              @id)
+        end
+      end
+
+      # Internal part of save method. Saves the asset
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      def save_asset(request_id)
+        body = BlueprintClient::AssetBody.new(data: {
+                                                id: @id,
+                                                type: @type,
+                                                attributes: @attributes
+                                              })
+        self.class.api_client(request_id).replace_asset(@namespace, stored_id,
+                                                        stored_type, body: body)
       end
 
       # rubocop:disable Metrics/LineLength
