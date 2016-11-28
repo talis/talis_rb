@@ -290,6 +290,16 @@ describe Talis::Hierarchy::Asset do
       asset_associated_with_node(created_asset, namespace, 'modules', 'def')
     end
 
+    it 'saves a valid asset with attributes' do
+      expect(asset.attributes).to eq({})
+      asset.attributes = { test: 'attribute' }
+      asset.save
+      updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                  type: 'notes',
+                                                  id: '999')
+      expect(updated_asset.attributes[:test]).to eq 'attribute'
+    end
+
     it 'raises an error when the server responds with a bad request error' do
       stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
         .to_return(status: [400])
@@ -347,7 +357,7 @@ describe Talis::Hierarchy::Asset do
       expect(existing_asset.attributes).to eq({})
 
       existing_asset.attributes = { test: 'attribute' }
-      existing_asset.update
+      existing_asset.save
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'notes',
@@ -372,7 +382,7 @@ describe Talis::Hierarchy::Asset do
       existing_asset.type = 'lists'
       expect(existing_asset.type).to eq('lists')
       expect(existing_asset.stored_type).to eq('notes')
-      existing_asset.update
+      existing_asset.save
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'lists',
@@ -388,7 +398,7 @@ describe Talis::Hierarchy::Asset do
 
       existing_asset.id = new_id
 
-      existing_asset.update
+      existing_asset.save
 
       updated_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                   type: 'lists',
@@ -416,7 +426,7 @@ describe Talis::Hierarchy::Asset do
         status: [400]
       )
 
-      expect { asset.update }.to raise_error Talis::BadRequestError
+      expect { asset.save }.to raise_error Talis::BadRequestError
     end
 
     it 'raises an error when the server responds with a server error' do
@@ -424,14 +434,14 @@ describe Talis::Hierarchy::Asset do
         status: [500]
       )
 
-      expect { asset.update }.to raise_error Talis::ServerError
+      expect { asset.save }.to raise_error Talis::ServerError
     end
 
     it 'raises an error when there is a problem talking to the server' do
       Talis::Hierarchy::Asset.base_uri('http://foo')
       expected_error = Talis::ServerCommunicationError
 
-      expect { asset.update }.to raise_error expected_error
+      expect { asset.save }.to raise_error expected_error
     end
 
     it 'raises an error when the client credentials are invalid' do
@@ -439,7 +449,7 @@ describe Talis::Hierarchy::Asset do
       Talis::Authentication.client_secret = 'ruby-client-test'
       message = 'The client credentials are invalid'
 
-      expect { asset.update }.to raise_error Talis::BadRequestError, message
+      expect { asset.save }.to raise_error Talis::BadRequestError, message
     end
   end
 

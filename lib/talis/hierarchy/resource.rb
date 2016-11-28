@@ -9,10 +9,11 @@ module Talis
       # @return [String] The type of resource.
       attr_reader :type
       # @return [Hash] key-value pair attributes belonging to the resource.
-      attr_accessor :attributes
+      attr_reader :attributes
 
       @new_resource = false
       @deleted = false
+      @modified = false
 
       # Manages the current & stored resource type so resources can be edited/
       # deleted properly
@@ -20,6 +21,7 @@ module Talis
       def type=(resource_type)
         @original_type = type if persisted?
         @type = resource_type
+        @modified = true
       end
 
       # Manages the current & stored resource id so resources can be edited/
@@ -28,6 +30,7 @@ module Talis
       def id=(resource_id)
         @original_id = id if persisted?
         @id = resource_id
+        @modified = true
       end
 
       # The resource type the API thinks the resource has (if it has been saved)
@@ -49,11 +52,23 @@ module Talis
         !(@new_resource || @deleted)
       end
 
+      # A boolean indicating if the resource has been modified
+      # @return [Boolean]
+      def modified?
+        @modified
+      end
+
+      def attributes=(attributes)
+        @attributes = attributes
+        @modified = true
+      end
+
       protected
 
       def mark_persisted
         @new_resource = false
         @deleted = false
+        @modified = false
         @original_id = id
         @original_type = type
       end

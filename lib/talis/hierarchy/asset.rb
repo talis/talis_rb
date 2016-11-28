@@ -25,9 +25,8 @@ module Talis
     #    nodes: [ node ]
     #  }
     #  asset = Talis::Hierarchy::Asset.new(asset_options)
-    #  asset.save # Will raise an exception if this fails
     #  asset.attributes = { attr_key: 'my_attr_value' }
-    #  asset.update
+    #  asset.save # Will raise an exception if this fails
     # @example Create an asset and associate it with multiple nodes.
     #  node1_options = {
     #    namespace: 'mynamespace',
@@ -84,31 +83,24 @@ module Talis
       #   server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def save(request_id: self.class.new_req_id)
-        @nodes.each do |node|
-          self.class.api_client(request_id).add_asset_to_node(@namespace,
-                                                              node.type,
-                                                              node.id,
-                                                              @type,
-                                                              @id)
+        if @new_resource
+          @nodes.each do |node|
+            self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                                node.type,
+                                                                node.id,
+                                                                @type,
+                                                                @id)
+          end
         end
-        mark_persisted
-      rescue BlueprintClient::ApiError => error
-        self.class.handle_response(error)
-      end
-
-      # Update an existing asset.
-      # @param request_id [String] ('uuid') unique ID for the remote request.
-      # @raise [Talis::ClientError] if the request was invalid.
-      # @raise [Talis::ServerError] if the update failed on the server.
-      # @raise [Talis::ServerCommunicationError] for network issues.
-      def update(request_id: self.class.new_req_id)
-        body = BlueprintClient::AssetBody.new(data: {
-                                                id: @id,
-                                                type: @type,
-                                                attributes: @attributes
-                                              })
-        self.class.api_client(request_id).replace_asset(@namespace, stored_id,
-                                                        stored_type, body: body)
+        if !persisted? || modified?
+          body = BlueprintClient::AssetBody.new(data: {
+                                                  id: @id,
+                                                  type: @type,
+                                                  attributes: @attributes
+                                                })
+          self.class.api_client(request_id).replace_asset(@namespace, stored_id,
+                                                          stored_type, body: body)
+        end
         mark_persisted
       rescue BlueprintClient::ApiError => error
         self.class.handle_response(error)
