@@ -479,6 +479,7 @@ describe Talis::Hierarchy::Asset do
       stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [400]
       )
+      asset.attributes = { test: 'attribute' }
 
       expect { asset.save }.to raise_error Talis::BadRequestError
     end
@@ -487,6 +488,7 @@ describe Talis::Hierarchy::Asset do
       stub_request(:put, %r{1/rubytest/assets/notes/999}).to_return(
         status: [500]
       )
+      asset.attributes = { test: 'attribute' }
 
       expect { asset.save }.to raise_error Talis::ServerError
     end

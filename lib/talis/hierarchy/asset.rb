@@ -137,13 +137,13 @@ module Talis
       # Internal part of save method. Saves the asset
       # @param request_id [String] ('uuid') unique ID for the remote request.
       def save_asset(request_id)
-        body = BlueprintClient::AssetBody.new(data: {
-                                                id: @id,
-                                                type: @type,
-                                                attributes: @attributes
-                                              })
-        self.class.api_client(request_id).replace_asset(@namespace, stored_id,
-                                                        stored_type, body: body)
+        if @attributes.count > 0 || @type != stored_type || @id != stored_id
+          data = { id: @id, type: @type, attributes: @attributes }
+          body = BlueprintClient::AssetBody.new(data: data)
+          self.class.api_client(request_id).replace_asset(
+            @namespace, stored_id, stored_type, body: body
+          )
+        end
       end
 
       # rubocop:disable Metrics/LineLength
