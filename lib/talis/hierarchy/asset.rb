@@ -56,7 +56,7 @@ module Talis
 
       # @return [Array<BlueprintClient::Node>] An array of nodes an
       #   asset can belong to.
-      attr_accessor :nodes
+      attr_reader :nodes
 
       # Create a non-persisted asset.
       # @param namespace [String] the namespace of the hierarchy.
@@ -75,6 +75,14 @@ module Talis
         @new_resource = true
       end
 
+      # Update the nodes associated to this asset
+      # @param nodes [Array<BlueprintClient::Node>] an array of nodes
+      #   an asset can belong to.
+      def nodes=(nodes)
+        @nodes = nodes
+        @modified = true
+      end
+
       # Persist the asset to the hierarchy.
       # @param request_id [String] ('uuid') unique ID for the remote request.
       # @return [Array<BlueprintClient::Asset>] the created asset.
@@ -83,7 +91,7 @@ module Talis
       #   server.
       # @raise [Talis::ServerCommunicationError] for network issues.
       def save(request_id: self.class.new_req_id)
-        save_nodes request_id if @new_resource
+        add_to_nodes request_id if @new_resource || modified?
         save_asset request_id if !persisted? || modified?
         mark_persisted
       rescue BlueprintClient::ApiError => error
@@ -107,13 +115,18 @@ module Talis
 
       # Internal part of save method. Saves the nodes
       # @param request_id [String] ('uuid') unique ID for the remote request.
-      def save_nodes(request_id)
+      def add_to_nodes(request_id)
         @nodes.each do |node|
-          self.class.api_client(request_id).add_asset_to_node(@namespace,
-                                                              node.type,
-                                                              node.id,
-                                                              @type,
-                                                              @id)
+          begin
+            self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                                node.type,
+                                                                node.id,
+                                                                @type,
+                                                                @id)
+          rescue BlueprintClient::ApiError => error
+            raise error unless error.code == 409
+            # Already associated with node - continue to add others
+          end
         end
       end
 

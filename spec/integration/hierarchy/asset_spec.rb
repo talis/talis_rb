@@ -268,7 +268,7 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
 
-      asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
+      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
     end
 
     it 'saves a valid asset with multiple nodes' do
@@ -286,8 +286,8 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
 
-      asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
-      asset_associated_with_node(created_asset, namespace, 'modules', 'def')
+      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
+      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'def')
     end
 
     it 'saves a valid asset with attributes' do
@@ -308,7 +308,13 @@ describe Talis::Hierarchy::Asset do
     end
 
     it 'raises an error when the server responds with a conflict error' do
-      stub_request(:put, %r{1/rubytest/nodes/modules/xyz/assets/notes/999})
+      # Stub updating asset attributes not nodes. A 409 when updating
+      # nodes will not be propogated
+
+      expect(asset.attributes).to eq({})
+      asset.attributes = { test: 'attribute' }
+
+      stub_request(:put, %r{1/rubytest/assets/notes/999})
         .to_return(status: [409])
 
       expect { asset.save }.to raise_error Talis::ConflictError
@@ -419,6 +425,34 @@ describe Talis::Hierarchy::Asset do
 
       # o/~ Clean up, clean up, everybody do their share o/~
       updated_asset.delete
+
+    end
+
+    it 'should update a valid asset with a new node' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      node2 = OpenStruct.new(id: 'def', type: 'modules')
+      existing_asset.nodes = [node2]
+      existing_asset.save
+
+      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'xyz')
+      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'def')
+    end
+
+    it 'should update a valid asset with a new node but not error on existing nodes' do
+      asset.save
+      existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
+                                                   type: 'notes',
+                                                   id: '999')
+      existing_node = OpenStruct.new(id: 'xyz', type: 'modules')
+      new_node = OpenStruct.new(id: 'def', type: 'modules')
+      existing_asset.nodes = [existing_node, new_node]
+      existing_asset.save
+
+      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'xyz')
+      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'def')
     end
 
     it 'raises an error when the server responds with a bad request error' do
@@ -570,10 +604,10 @@ describe Talis::Hierarchy::Asset do
     expect(request.post(uri.path, csv, headers).code).to eq '204'
   end
 
-  def asset_associated_with_node(asset, namespace, type, id)
+  def assert_asset_associated_with_node(asset, namespace, type, id)
     found_assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                         type: type,
                                                         id: id)
-    expect(found_assets.any? { |a| a.id == asset.id }).to be true
+    expect(found_assets.any? { |a| a.id == asset.id && a.type == asset.type }).to be true
   end
 end
