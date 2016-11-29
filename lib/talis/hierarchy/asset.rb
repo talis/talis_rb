@@ -113,21 +113,25 @@ module Talis
 
       private
 
-      # Internal part of save method. Saves the nodes
+      # Internal part of save method. Adds asset to nodes
       # @param request_id [String] ('uuid') unique ID for the remote request.
       def add_to_nodes(request_id)
-        @nodes.each do |node|
-          begin
-            self.class.api_client(request_id).add_asset_to_node(@namespace,
-                                                                node.type,
-                                                                node.id,
-                                                                @type,
-                                                                @id)
-          rescue BlueprintClient::ApiError => error
-            raise error unless error.code == 409
-            # Already associated with node - continue to add others
-          end
-        end
+        @nodes.each { |node| add_to_node(request_id, node) }
+      end
+
+      # Internal part of save method. Adds asset to node
+      # @param request_id [String] ('uuid') unique ID for the remote request.
+      # @param node [BlueprintClient::Node] The node the asset should be
+      #   added to.
+      def add_to_node(request_id, node)
+        self.class.api_client(request_id).add_asset_to_node(@namespace,
+                                                            node.type,
+                                                            node.id,
+                                                            @type,
+                                                            @id)
+      rescue BlueprintClient::ApiError => error
+        raise error unless error.code == 409
+        # Already associated with node - do not error
       end
 
       # Internal part of save method. Saves the asset

@@ -268,7 +268,10 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
 
-      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
     end
 
     it 'saves a valid asset with multiple nodes' do
@@ -286,8 +289,14 @@ describe Talis::Hierarchy::Asset do
       expect(created_asset.id).to eq '999'
       expect(created_asset.type).to eq 'notes'
 
-      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'xyz')
-      assert_asset_associated_with_node(created_asset, namespace, 'modules', 'def')
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(created_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
     end
 
     it 'saves a valid asset with attributes' do
@@ -425,7 +434,6 @@ describe Talis::Hierarchy::Asset do
 
       # o/~ Clean up, clean up, everybody do their share o/~
       updated_asset.delete
-
     end
 
     it 'should update a valid asset with a new node' do
@@ -437,11 +445,17 @@ describe Talis::Hierarchy::Asset do
       existing_asset.nodes = [node2]
       existing_asset.save
 
-      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'xyz')
-      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'def')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
     end
 
-    it 'should update a valid asset with a new node but not error on existing nodes' do
+    it 'should update an asset but not error on existing nodes' do
       asset.save
       existing_asset = Talis::Hierarchy::Asset.get(namespace: namespace,
                                                    type: 'notes',
@@ -451,8 +465,14 @@ describe Talis::Hierarchy::Asset do
       existing_asset.nodes = [existing_node, new_node]
       existing_asset.save
 
-      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'xyz')
-      assert_asset_associated_with_node(existing_asset, namespace, 'modules', 'def')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'xyz')
+      assert_asset_associated_with_node(existing_asset,
+                                        namespace,
+                                        'modules',
+                                        'def')
     end
 
     it 'raises an error when the server responds with a bad request error' do
@@ -608,6 +628,7 @@ describe Talis::Hierarchy::Asset do
     found_assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                         type: type,
                                                         id: id)
-    expect(found_assets.any? { |a| a.id == asset.id && a.type == asset.type }).to be true
+    match = found_assets.any? { |a| a.id == asset.id && a.type == asset.type }
+    expect(match).to be true
   end
 end
