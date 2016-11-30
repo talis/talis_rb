@@ -32,7 +32,7 @@ describe Talis::Bibliography::Work do
 
     it 'hydrates assets when they are included' do
       works = Talis::Bibliography::Work.find(
-        query: 'testament_of_adolf_hitler', offset: 0, limit: 1,
+        query: 'rockclimbing', offset: 0, limit: 1,
         include: ['manifestations.assets']
       )
       expect(works).to be_a(MetatronClient::WorkResultSet)

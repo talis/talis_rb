@@ -99,7 +99,7 @@ describe Talis::Hierarchy::Node do
       nodes = Talis::Hierarchy::Node.find(namespace: namespace).data
       node = nodes.first
 
-      expect(nodes.size).to eq 5
+      expect(nodes.size).to eq 6
       expect(node.id).to eq 'abc'
       expect(node.type).to eq 'colleges'
       expect(node.attributes.title).to eq 'College of ABC'
@@ -532,7 +532,7 @@ describe Talis::Hierarchy::Node do
                                                        id: 'lmnop')
       node = descendants.first
 
-      expect(descendants.size).to eq 3
+      expect(descendants.size).to eq 4
       expect(node.id).to eq 'stuv'
       expect(node.type).to eq 'courses'
       expect(node.attributes.title).to eq 'Introduction to STUV'

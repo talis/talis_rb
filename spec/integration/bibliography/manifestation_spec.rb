@@ -11,7 +11,7 @@ describe Talis::Bibliography::Manifestation do
   context 'searching manifestations' do
     it 'returns manifestations when given a valid isbn query' do
       books = Talis::Bibliography::Manifestation.find(
-        opts: { isbn: '9785510816150' }
+        opts: { isbn: '9780356195841' }
       )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.first).to be_a(Talis::Bibliography::Manifestation)
@@ -21,7 +21,7 @@ describe Talis::Bibliography::Manifestation do
 
     it 'returns manifestations when given a valid work_id query' do
       books = Talis::Bibliography::Manifestation.find(
-        opts: { work_id: 'amazon_web_services/russellj' }
+        opts: { work_id: 'testament_of_adolf_hitler/hitlera' }
       )
       expect(books).to be_a(MetatronClient::ManifestationResultSet)
       expect(books.first).to be_a(Talis::Bibliography::Manifestation)
@@ -31,18 +31,18 @@ describe Talis::Bibliography::Manifestation do
 
     it 'hydrates manifestations with included contributors' do
       book = Talis::Bibliography::Manifestation.find(
-        opts: { isbn: '9785510816150' }
+        opts: { isbn: '9780356195841' }
       ).first
       expect(book).to be_a(Talis::Bibliography::Manifestation)
       expect(book.contributors).to be_a(Array)
       expect(book.contributors.first).to be_a(MetatronClient::ResourceData)
       expect(book.contributors.first.type).to eq('agents')
-      expect(book.contributors.first.attributes[:name]).to eq('Jesse Russell')
+      expect(book.contributors.first.attributes[:name]).to eq('I. Peten')
     end
 
     it 'hydrates manifestations with included work' do
       book = Talis::Bibliography::Manifestation.find(
-        opts: { isbn: '9785510816150' }
+        opts: { isbn: '9780356195841' }
       ).first
       expect(book).to be_a(Talis::Bibliography::Manifestation)
       expect(book.work).to be_a(MetatronClient::WorkData)
