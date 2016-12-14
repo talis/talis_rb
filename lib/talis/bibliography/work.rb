@@ -41,17 +41,16 @@ module Talis
         # @raise [Talis::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::ServerCommunicationError] for network issues.
-        def find(request_id: new_req_id, query:, offset: 0, limit: 20, include: [], opts: {})
+        def find(request_id: new_req_id, query:, include: [], opts: {})
           query = escape_query(query) if opts[:escape_query]
-          api_client(request_id).work(token, query, limit, offset,
-                                      include: include)
-                                .extend(ResultSet).hydrate
+          offset = opts[:offset] || 0
+          limit = opts[:limit] || 20
+          search_works(request_id, query, offset, limit, include)
         rescue MetatronClient::ApiError => error
           begin
             handle_response(error)
           rescue Talis::NotFoundError
-            empty_result_set(MetatronClient::WorkResultSet,
-                             offset: offset, limit: limit, count: 0)
+            empty_result(offset, limit)
           end
         end
 
@@ -71,6 +70,19 @@ module Talis
           rescue Talis::NotFoundError
             nil
           end
+        end
+
+        private
+
+        def search_works(request_id, query, offset, limit, include)
+          api_client(request_id).work(token, query, limit,
+                                      offset, include: include)
+                                .extend(ResultSet).hydrate
+        end
+
+        def empty_result(offset, limit)
+          empty_result_set(MetatronClient::WorkResultSet,
+                           offset: offset, limit: limit, count: 0)
         end
       end
 
