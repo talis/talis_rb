@@ -41,7 +41,8 @@ module Talis
         # @raise [Talis::ServerError] if the search failed on the
         #   server.
         # @raise [Talis::ServerCommunicationError] for network issues.
-        def find(request_id: new_req_id, query:, offset: 0, limit: 20, include: [])
+        def find(request_id: new_req_id, query:, offset: 0, limit: 20, include: [], opts: {})
+          query = escape_query(query) if opts[:escape_query]
           api_client(request_id).work(token, query, limit, offset,
                                       include: include)
                                 .extend(ResultSet).hydrate
