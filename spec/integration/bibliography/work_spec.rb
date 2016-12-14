@@ -10,8 +10,8 @@ describe Talis::Bibliography::Work do
 
   context 'searching works' do
     it 'returns works when given a valid query' do
-      works = Talis::Bibliography::Work.find(query: 'rockclimbing', offset: 0,
-                                             limit: 1)
+      works = Talis::Bibliography::Work.find(query: 'rockclimbing',
+                                             opts: { offset: 0, limit: 1 })
       expect(works).to be_a(MetatronClient::WorkResultSet)
       expect(works.first).to be_a(Talis::Bibliography::Work)
       expect(works.first).to eq works.data.first
@@ -19,8 +19,8 @@ describe Talis::Bibliography::Work do
     end
 
     it 'hydrates manifestations when they are included' do
-      works = Talis::Bibliography::Work.find(query: 'rockclimbing', offset: 0,
-                                             limit: 1,
+      works = Talis::Bibliography::Work.find(query: 'rockclimbing',
+                                             opts: { offset: 0, limit: 1 },
                                              include: ['manifestations'])
       expect(works).to be_a(MetatronClient::WorkResultSet)
       expect(works.first).to be_a(Talis::Bibliography::Work)
@@ -32,7 +32,7 @@ describe Talis::Bibliography::Work do
 
     it 'hydrates assets when they are included' do
       works = Talis::Bibliography::Work.find(
-        query: 'rockclimbing', offset: 0, limit: 1,
+        query: 'rockclimbing', opts: { offset: 0, limit: 1 },
         include: ['manifestations.assets']
       )
       expect(works).to be_a(MetatronClient::WorkResultSet)
@@ -45,8 +45,8 @@ describe Talis::Bibliography::Work do
     end
 
     it 'should return an empty WorkResult if there are no query matches' do
-      works = Talis::Bibliography::Work.find(query: 'hicvnafih', offset: 0,
-                                             limit: 1)
+      works = Talis::Bibliography::Work.find(query: 'hicvnafih',
+                                             opts: { offset: 0, limit: 1 })
       expect(works).to be_a(MetatronClient::WorkResultSet)
       expect(works.data).to be_empty
       expect(works.meta.count).to eq 0
