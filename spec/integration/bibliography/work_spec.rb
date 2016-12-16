@@ -53,5 +53,30 @@ describe Talis::Bibliography::Work do
       expect(works.meta.offset).to eq 0
       expect(works.meta.limit).to eq 1
     end
+
+    it 'should fail when query terms contain unescaped reserved characters' do
+      queries = ["Don't make me think!", 'Pl/SQL', '{some query', 'some query}',
+                 '[foobar]', 'the~tenticle', 'have you seen my ^', ':foo:',
+                 '(some query', 'some query)', '"some query']
+      queries.each do |query|
+        expect{
+          Talis::Bibliography::Work.find(query: query,
+                                         opts: { offset: 0, limit: 1 })
+        }.to raise_error(Talis::BadRequestError)
+      end
+    end
+
+    it 'should return a ResultSet when reserved characters are escaped' do
+      queries = ["Don't make me think!", 'Pl/SQL', '{some query', 'some query}',
+                 '[foobar]', 'the~tenticle', 'have you seen my ^', ':foo:',
+                 '(some query', 'some query)', '"some query']
+      queries.each do |query|
+        works = Talis::Bibliography::Work.find(query: query,
+                                                opts: { offset: 0, limit: 1,
+                                                        escape_query: true })
+        expect(works).to be_a(MetatronClient::WorkResultSet)
+        expect(works).to be_a(Talis::Bibliography::ResultSet)
+      end
+    end
   end
 end
