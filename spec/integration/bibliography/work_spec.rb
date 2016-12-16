@@ -59,10 +59,10 @@ describe Talis::Bibliography::Work do
                  '[foobar]', 'the~tenticle', 'have you seen my ^', ':foo:',
                  '(some query', 'some query)', '"some query']
       queries.each do |query|
-        expect{
+        expect do
           Talis::Bibliography::Work.find(query: query,
                                          opts: { offset: 0, limit: 1 })
-        }.to raise_error(Talis::BadRequestError)
+        end.to raise_error(Talis::BadRequestError)
       end
     end
 
@@ -72,8 +72,8 @@ describe Talis::Bibliography::Work do
                  '(some query', 'some query)', '"some query']
       queries.each do |query|
         works = Talis::Bibliography::Work.find(query: query,
-                                                opts: { offset: 0, limit: 1,
-                                                        escape_query: true })
+                                               opts: { offset: 0, limit: 1,
+                                                       escape_query: true })
         expect(works).to be_a(MetatronClient::WorkResultSet)
         expect(works).to be_a(Talis::Bibliography::ResultSet)
       end
