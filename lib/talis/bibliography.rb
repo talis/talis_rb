@@ -41,12 +41,12 @@ module Talis
       klass.new(data: [], meta: meta).extend(ResultSet)
     end
 
-    # rubocop:disable Metrics/LineLength
     def escape_query(query_string)
       # TODO: are all of these necessary?
-      pattern = %r((\+|\-|\=|\&\&|\|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\/))
+      pattern = %r{
+        (\+|\-|\=|\&\&|\|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\/)
+      }x
       query_string.gsub(pattern) { |match| "\\#{match}" }
     end
-    # rubocop:enable Metrics/LineLength
   end
 end

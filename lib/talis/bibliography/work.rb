@@ -24,10 +24,11 @@ module Talis
         # Search for bibliographic works
         # @param request_id [String] ('uuid') unique ID for the remote request.
         # @param query [String] the query to filter works on
-        # @param offset [Integer] the page offset
-        # @param limit [Integer] the number of works per page
         # @param include [Array] the related resources to associate with each work
         #   see {https://github.com/talis/metatron_rb/blob/master/docs/DefaultApi.md#2_works_get}
+        # @param opts [Hash] Can include key/value pairs for offset (default: 0),
+        #   limit (default 20), and escape_query (boolean), which will escape any
+        #   reserved characters from the query parameter
         # @return [MetatronClient::WorkResultSet] containing data and meta attributes.
         #   The structure is as follows:
         #     {
