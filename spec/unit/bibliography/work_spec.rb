@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe Talis::Bibliography::Work do
-  let(:request_id) { 'request-id-123' }
+  let(:request_id) { 'a1b2c3d4e5f60' }
   context 'escaping works search queries' do
     it 'should not escape reserved characters in query by default' do
       query = '"/the + quick - brown: = fo\x && jumps || {over} > the <' \
