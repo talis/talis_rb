@@ -40,5 +40,13 @@ module Talis
       meta = OpenStruct.new(meta_properties)
       klass.new(data: [], meta: meta).extend(ResultSet)
     end
+
+    def escape_query(query_string)
+      # TODO: are all of these necessary?
+      pattern = %r{
+        (\+|\-|\=|\&\&|\|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\/)
+      }x
+      query_string.gsub(pattern) { |match| "\\#{match}" }
+    end
   end
 end
