@@ -1,0 +1,93 @@
+{
+  "zzz": {
+    "type": "coretext_preferences_awaiting",
+    "nodes": [
+      {
+        "id": "abc",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "yyy": {
+    "type": "coretext_preferences_received",
+    "nodes": [
+      {
+        "id": "abc",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "xxx": {
+    "type": "coretext_preferences_received",
+    "nodes": [
+      {
+        "id": "def",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "www": {
+    "type": "coretext_preferences_email_failed",
+    "nodes": [
+      {
+        "id": "ghi",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "vvv": {
+    "type": "coretext_preferences_in_progress",
+    "nodes": [
+      {
+        "id": "def",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "uuu": {
+    "type": "coretext_preferences_received",
+    "nodes": [
+      {
+        "id": "jkl",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "redemption_periods"
+      }
+    ]
+  },
+  "ttt": {
+    "type": "coretext_preferences_in_progress",
+    "nodes": [
+      {
+        "id": "ghi",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "redemption_periods"
+      }
+    ]
+  }
+}
