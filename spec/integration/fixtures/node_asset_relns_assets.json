@@ -1,0 +1,93 @@
+{
+  "zzz": {
+    "type": "assets_4444",
+    "nodes": [
+      {
+        "id": "abc",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "yyy": {
+    "type": "assets_2222",
+    "nodes": [
+      {
+        "id": "abc",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "xxx": {
+    "type": "assets_2222",
+    "nodes": [
+      {
+        "id": "def",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "www": {
+    "type": "assets_1111",
+    "nodes": [
+      {
+        "id": "ghi",
+        "type": "modules"
+      },
+      {
+        "id": "123",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "vvv": {
+    "type": "assets_3333",
+    "nodes": [
+      {
+        "id": "def",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "uuu": {
+    "type": "assets_2222",
+    "nodes": [
+      {
+        "id": "jkl",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "time_periods"
+      }
+    ]
+  },
+  "ttt": {
+    "type": "assets_3333",
+    "nodes": [
+      {
+        "id": "ghi",
+        "type": "modules"
+      },
+      {
+        "id": "456",
+        "type": "time_periods"
+      }
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 require_relative '../spec_helper'
+require 'blueprint_ruby_client'
 
 describe Talis::Hierarchy::Node do
   let(:namespace) { 'rubytest' }
@@ -8,6 +9,7 @@ describe Talis::Hierarchy::Node do
     Talis::Authentication.client_id = client_id
     Talis::Authentication.client_secret = client_secret
     Talis::Hierarchy::Node.base_uri(blueprint_base_uri)
+    Talis::Hierarchy::Asset.base_uri(blueprint_base_uri)
 
     setup_node_data
   end
@@ -750,6 +752,86 @@ describe Talis::Hierarchy::Node do
     end
   end
 
+  context 'searching for nodes related by assets' do
+    let(:asset_node_namespace) { "rubytest#{Time.now.to_i}" }
+    before do
+      setup_asset_node_data(asset_node_namespace)
+    end
+    it 'should find nodes with assets related to another node' do
+      opts = {
+        filter_asset_node: ['time_periods/123'],
+        filter_node_type: ['modules']
+      }
+      nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
+                                          opts: opts).data
+
+      expect(nodes.size).to eq 3
+      nodes.each do |node|
+        expect(node.type).to eq 'modules'
+      end
+
+      expect(nodes.map(&:id)).to contain_exactly(
+        'abc', 'def', 'ghi'
+      )
+    end
+
+    it 'should find nodes with typed assets related to another node' do
+      opts = {
+        filter_asset_node: ['time_periods/456'],
+        filter_asset_type: ['assets_2222'],
+        filter_node_type: ['modules']
+      }
+      nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
+                                          opts: opts).data
+
+      expect(nodes.size).to eq 1
+      nodes.each do |node|
+        expect(node.type).to eq 'modules'
+        expect(node.id).to eq 'jkl'
+      end
+    end
+
+    it 'should find descendants with assets related to another node' do
+      opts = {
+        filter_asset_node: ['time_periods/456'],
+        filter_ancestor: ['schools/zyx'],
+        filter_node_type: ['modules']
+      }
+      nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
+                                          opts: opts).data
+
+      expect(nodes.size).to eq 2
+      nodes.each do |node|
+        expect(node.type).to eq 'modules'
+      end
+
+      expect(nodes.map(&:id)).to contain_exactly(
+        'abc', 'def'
+      )
+    end
+
+    it 'should find descendants with typed assets related to another node' do
+      opts = {
+        filter_asset_node: ['time_periods/456'],
+        filter_asset_type: ['assets_3333'],
+        filter_ancestor: ['schools/wvu'],
+        filter_node_type: ['modules']
+      }
+      nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
+                                          opts: opts).data
+
+      expect(nodes.size).to eq 1
+      nodes.each do |node|
+        expect(node.type).to eq 'modules'
+        expect(node.id).to eq 'ghi'
+      end
+    end
+
+    after do
+      teardown_asset_node_data(asset_node_namespace)
+    end
+  end
+
   private
 
   def setup_node_data
@@ -760,6 +842,31 @@ describe Talis::Hierarchy::Node do
     node_bulk_upload('rubytest', add_hierarchy)
     node_bulk_upload('rubyappendtest', remove_hierarchy)
     node_bulk_upload('rubyappendtest', add_hierarchy)
+  end
+
+  def setup_asset_node_data(namespace)
+    fixtures_dir = File.expand_path('../../fixtures', __FILE__)
+    hiera_file = 'node_asset_relns_hierarchy'
+    remove_hierarchy = File.read("#{fixtures_dir}/remove_#{hiera_file}.csv")
+    add_hierarchy = File.read("#{fixtures_dir}/add_#{hiera_file}.csv")
+    assets = JSON.load File.read(
+      "#{fixtures_dir}/node_asset_relns_assets.json"
+    )
+    node_bulk_upload(namespace, remove_hierarchy)
+    node_bulk_upload(namespace, add_hierarchy)
+    add_assets(assets, namespace)
+  end
+
+  def teardown_asset_node_data(namespace)
+    fixtures_dir = File.expand_path('../../fixtures', __FILE__)
+    remove_hierarchy = File.read(
+      "#{fixtures_dir}/remove_node_asset_relns_hierarchy.csv"
+    )
+    assets = JSON.load File.read(
+      "#{fixtures_dir}/node_asset_relns_assets.json"
+    )
+    node_bulk_upload(namespace, remove_hierarchy)
+    remove_assets(assets, namespace)
   end
 
   def token
@@ -783,5 +890,24 @@ describe Talis::Hierarchy::Node do
     request = Net::HTTP.new(uri.host, uri.port)
     request.use_ssl = (uri.scheme == 'https')
     expect(request.post(uri.path, csv, headers).code).to eq '204'
+  end
+
+  def add_assets(asset_data, namespace)
+    asset_data.each do |asset_id, data|
+      nodes = data['nodes'].map do |node_data|
+        OpenStruct.new(id: node_data['id'], type: node_data['type'])
+      end
+      asset = Talis::Hierarchy::Asset.new(id: asset_id, type: data['type'],
+                                          nodes: nodes, namespace: namespace)
+      asset.save
+    end
+  end
+
+  def remove_assets(asset_data, namespace)
+    asset_data.each do |asset_id, data|
+      asset = Talis::Hierarchy::Asset.new(id: asset_id, type: data['type'],
+                                          namespace: namespace)
+      asset.delete
+    end
   end
 end
