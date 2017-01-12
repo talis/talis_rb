@@ -752,14 +752,14 @@ describe Talis::Hierarchy::Node do
     end
   end
 
-  context 'searching asset.node relationships' do
+  context 'searching for nodes related by assets' do
     let(:asset_node_namespace) { "rubytest#{Time.now.to_i}" }
     before do
       setup_asset_node_data(asset_node_namespace)
     end
     it 'should find nodes with assets related to another node' do
       opts = {
-        filter_asset_node: ['redemption_periods/123'],
+        filter_asset_node: ['time_periods/123'],
         filter_node_type: ['modules']
       }
       nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
@@ -777,8 +777,8 @@ describe Talis::Hierarchy::Node do
 
     it 'should find nodes with typed assets related to another node' do
       opts = {
-        filter_asset_node: ['redemption_periods/456'],
-        filter_asset_type: ['coretext_preferences_received'],
+        filter_asset_node: ['time_periods/456'],
+        filter_asset_type: ['assets_2222'],
         filter_node_type: ['modules']
       }
       nodes = Talis::Hierarchy::Node.find(namespace: asset_node_namespace,
@@ -793,7 +793,7 @@ describe Talis::Hierarchy::Node do
 
     it 'should find descendants with assets related to another node' do
       opts = {
-        filter_asset_node: ['redemption_periods/456'],
+        filter_asset_node: ['time_periods/456'],
         filter_ancestor: ['schools/zyx'],
         filter_node_type: ['modules']
       }
@@ -812,8 +812,8 @@ describe Talis::Hierarchy::Node do
 
     it 'should find descendants with typed assets related to another node' do
       opts = {
-        filter_asset_node: ['redemption_periods/456'],
-        filter_asset_type: ['coretext_preferences_in_progress'],
+        filter_asset_node: ['time_periods/456'],
+        filter_asset_type: ['assets_3333'],
         filter_ancestor: ['schools/wvu'],
         filter_node_type: ['modules']
       }

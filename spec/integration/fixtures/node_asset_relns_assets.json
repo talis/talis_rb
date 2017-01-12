@@ -1,6 +1,6 @@
 {
   "zzz": {
-    "type": "coretext_preferences_awaiting",
+    "type": "assets_4444",
     "nodes": [
       {
         "id": "abc",
@@ -8,12 +8,12 @@
       },
       {
         "id": "456",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "yyy": {
-    "type": "coretext_preferences_received",
+    "type": "assets_2222",
     "nodes": [
       {
         "id": "abc",
@@ -21,12 +21,12 @@
       },
       {
         "id": "123",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "xxx": {
-    "type": "coretext_preferences_received",
+    "type": "assets_2222",
     "nodes": [
       {
         "id": "def",
@@ -34,12 +34,12 @@
       },
       {
         "id": "123",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "www": {
-    "type": "coretext_preferences_email_failed",
+    "type": "assets_1111",
     "nodes": [
       {
         "id": "ghi",
@@ -47,12 +47,12 @@
       },
       {
         "id": "123",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "vvv": {
-    "type": "coretext_preferences_in_progress",
+    "type": "assets_3333",
     "nodes": [
       {
         "id": "def",
@@ -60,12 +60,12 @@
       },
       {
         "id": "456",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "uuu": {
-    "type": "coretext_preferences_received",
+    "type": "assets_2222",
     "nodes": [
       {
         "id": "jkl",
@@ -73,12 +73,12 @@
       },
       {
         "id": "456",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   },
   "ttt": {
-    "type": "coretext_preferences_in_progress",
+    "type": "assets_3333",
     "nodes": [
       {
         "id": "ghi",
@@ -86,7 +86,7 @@
       },
       {
         "id": "456",
-        "type": "redemption_periods"
+        "type": "time_periods"
       }
     ]
   }
