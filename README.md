@@ -48,7 +48,28 @@ See the code for each class for specific usage:
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. 
+
+Create a `.env` file in the project root and configure the following variables:
+
+    PERSONA_TEST_HOST=http://persona
+    PERSONA_OAUTH_CLIENT=<client ID>
+    PERSONA_OAUTH_SECRET=<client secret>
+    BLUEPRINT_TEST_HOST=http://blueprint
+    ECHO_TEST_HOST=http://echo
+    
+    METATRON_TEST_HOST=<Metatron host>
+    METATRON_BASE_PATH=<set this to /env_name/2 if not using production>
+    METATRON_OAUTH_HOST=<Persona host the Metatron host uses>
+    METATRON_OAUTH_CLIENT=<client ID associated with oauth host above>
+    METATRON_OAUTH_SECRET=<client secret associated with oauth host above>
+    TEST_USER_GUID=<The GUID of the Talis test user (test.tn@talis.com)>
+
+    
+Adjust the values according to the primitives you want to test against (local or remote).
+If testing locally then make sure the host names are in `/etc/hosts`.
+
+Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 This project enforces style and lint rules via [Rubocop](https://github.com/bbatsov/rubocop). Run `rake rubocop` to check for violations.
 

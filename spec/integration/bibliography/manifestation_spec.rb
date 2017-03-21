@@ -2,9 +2,9 @@ require_relative '../spec_helper'
 
 describe Talis::Bibliography::Manifestation do
   before do
-    Talis::Authentication::Token.base_uri(persona_base_uri)
-    Talis::Authentication.client_id = client_id
-    Talis::Authentication.client_secret = client_secret
+    Talis::Authentication::Token.base_uri(metatron_oauth_host)
+    Talis::Bibliography::Manifestation.client_id = metatron_client_id
+    Talis::Bibliography::Manifestation.client_secret = metatron_client_secret
     Talis::Bibliography::Manifestation.base_uri(metatron_base_uri)
   end
 

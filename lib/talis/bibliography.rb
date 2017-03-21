@@ -1,7 +1,7 @@
 require_relative 'bibliography/result_set'
 require_relative 'bibliography/work'
 require_relative 'bibliography/manifestation'
-# require_relative 'bibliography/asset'
+require_relative 'bibliography/ebook'
 
 module Talis
   # Encompasses all classes associated with bibliographic resources

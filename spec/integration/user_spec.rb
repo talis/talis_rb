@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 
 describe Talis::User do
-  let(:guid) { 'fdgNy6QWGmIAl7BRjEsFtA' }
+  let(:guid) { ENV.fetch('TEST_USER_GUID', 'fdgNy6QWGmIAl7BRjEsFtA') }
 
   before do
     Talis::Authentication::Token.base_uri(persona_base_uri)

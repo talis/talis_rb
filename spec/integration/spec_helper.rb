@@ -31,6 +31,18 @@ def metatron_base_uri
   ENV.fetch('METATRON_TEST_HOST', Talis::METATRON_HOST)
 end
 
+def metatron_oauth_host
+  ENV.fetch('METATRON_OAUTH_HOST', persona_base_uri)
+end
+
+def metatron_client_id
+  ENV.fetch('METATRON_OAUTH_CLIENT', client_id)
+end
+
+def metatron_client_secret
+  ENV.fetch('METATRON_OAUTH_SECRET', client_secret)
+end
+
 RSpec.configure do |config|
   config.after(:each) do
     WebMock.after_request do |request|

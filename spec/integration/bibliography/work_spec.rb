@@ -2,9 +2,9 @@ require_relative '../spec_helper'
 
 describe Talis::Bibliography::Work do
   before do
-    Talis::Authentication::Token.base_uri(persona_base_uri)
-    Talis::Authentication.client_id = client_id
-    Talis::Authentication.client_secret = client_secret
+    Talis::Authentication::Token.base_uri(metatron_oauth_host)
+    Talis::Bibliography::Work.client_id = metatron_client_id
+    Talis::Bibliography::Work.client_secret = metatron_client_secret
     Talis::Bibliography::Work.base_uri(metatron_base_uri)
   end
 
@@ -32,7 +32,8 @@ describe Talis::Bibliography::Work do
 
     it 'hydrates assets when they are included' do
       works = Talis::Bibliography::Work.find(
-        query: 'rockclimbing', opts: { offset: 0, limit: 1 },
+        query: 'An Introduction to Human Resource Management',
+        opts: { offset: 0, limit: 1 },
         include: ['manifestations.assets']
       )
       expect(works).to be_a(MetatronClient::WorkResultSet)
