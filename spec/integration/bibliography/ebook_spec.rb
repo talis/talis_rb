@@ -18,10 +18,14 @@ describe Talis::Bibliography::EBook do
       ebook = ebooks.first
       expect(ebook).to be_a(Talis::Bibliography::EBook)
 
+      expect(ebook.id).to eq 'sku:9781473966116'
+      expect(ebook.vbid).to eq '9781473966116'
       expect(ebook.title).to eq 'An Introduction to Human Resource Management'
       expect(ebook.author).to eq 'Nick Wilton'
       expect(ebook.format).to eq 'ePub'
       expect(ebook.digital_list_price).to eq '58.00'
+      expect(ebook.publisher_list_price).to eq '0.00'
+      expect(ebook.store_price).to eq '33.99'
     end
 
     it 'can accept an NBD prefix' do

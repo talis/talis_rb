@@ -15,15 +15,21 @@ module Talis
     class EBook < Talis::Resource
       extend Forwardable, Talis::OAuthService, Talis::Bibliography
       base_uri Talis::METATRON_HOST
-      attr_accessor :title, :author, :format, :digital_list_price
+      attr_accessor :id, :vbid, :title, :author, :format, :digital_list_price,
+                    :publisher_list_price, :store_price
       private_class_method :new
 
       def initialize(asset_data)
         attrs = asset_data.try(:attributes) || {}
+        @id = asset_data.id
+        @vbid = attrs[:vbid]
         @title = attrs[:title]
         @author = attrs[:author]
         @format = attrs[:'book-format']
-        @digital_list_price = attrs.fetch(:pricelist, {})[:'digital-list-price']
+        price_list = attrs.fetch(:pricelist, {})
+        @digital_list_price = price_list[:'digital-list-price']
+        @publisher_list_price = price_list[:'publisher-list-price']
+        @store_price = price_list.fetch(:'store-price', {})[:value]
       end
 
       class << self
