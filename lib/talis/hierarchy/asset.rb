@@ -164,11 +164,52 @@ module Talis
                                                            id, opts).data
           data.map! { |asset| build(asset, namespace) }
         rescue BlueprintClient::ApiError => error
-          begin
-            handle_response(error)
-          rescue Talis::NotFoundError
-            []
-          end
+          handle_blueprint_api_error(error)
+        end
+
+        # Search for assets in the hierarchy for the given namespace.
+        # @param request_id [String] ('uuid') unique ID for the remote request.
+        # @param namespace [String] the namespace of the hierarchy.
+        # @param opts [Hash] ({}) optional filter and pagination criteria.
+        #   see {https://github.com/talis/blueprint_rb/blob/master/docs/AssetsApi.md#search_assets}
+        #   One exception to the options listed above are filters which take
+        #   the following format, for example:
+        #   Return assets that are related to any nodes specified in the array.
+        #
+        #     filter_node: ['type/id', 'type/id']
+        #
+        #   As above but explicitly requesting an any match:
+        #
+        #     filter_node: { any: ['type/id', 'type/id'] }
+        #
+        #   Return assets that are related to all nodes specified in the array.
+        #
+        #     filter_node: { all: ['type/id', 'type/id'] }
+        # @return [Array<Talis::Hierarchy::Asset>] or an empty array if no
+        #   assets are found.
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the server.
+        # @raise [Talis::ServerCommunicationError] for network issues.
+        def where(request_id: new_req_id, namespace:, opts: {})
+          # search_assets method in resource module uses HTTParty not
+          # blueprint_rb to call the API to get around the Swagger limitation
+          # of not being able to choose between AND and IN queries.
+          data = search_assets(request_id, namespace, opts)
+          data.map! { |asset| build(asset, namespace) }
+        rescue Talis::NotFoundError
+          []
+        end
+
+        # Return all assets in the hierarchy for the given namespace.
+        # @param request_id [String] ('uuid') unique ID for the remote request.
+        # @param namespace [String] the namespace of the hierarchy.
+        # @return [Array<Talis::Hierarchy::Asset>] or an empty array if no
+        #   assets are found.
+        # @raise [Talis::ClientError] if the request was invalid.
+        # @raise [Talis::ServerError] if the search failed on the server.
+        # @raise [Talis::ServerCommunicationError] for network issues.
+        def all(request_id: new_req_id, namespace:)
+          where(request_id: request_id, namespace: namespace)
         end
 
         # Fetch a single asset from the hierarchy for the given namespace.
@@ -181,15 +222,11 @@ module Talis
         # @raise [Talis::ServerError] if the fetch failed on the
         #   server.
         # @raise [Talis::ServerCommunicationError] for network issues.
-        def get(request_id: new_req_id, namespace:, type:, id:)
+        def find(request_id: new_req_id, namespace:, type:, id:)
           data = api_client(request_id).get_asset(namespace, type, id).data
           build(data, namespace)
         rescue BlueprintClient::ApiError => error
-          begin
-            handle_response(error)
-          rescue Talis::NotFoundError
-            nil
-          end
+          handle_blueprint_api_error(error, false)
         end
 
         # Exposes the underlying Blueprint assets API client.
@@ -217,12 +254,10 @@ module Talis
           asset
         end
 
-        def configure_blueprint
-          BlueprintClient.configure do |config|
-            config.scheme = base_uri[/https?/]
-            config.host = base_uri
-            config.access_token = token
-          end
+        def handle_blueprint_api_error(error, return_empty_array = true)
+          handle_response(error)
+        rescue Talis::NotFoundError
+          return_empty_array ? [] : nil
         end
       end
     end

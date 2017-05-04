@@ -190,14 +190,6 @@ module Talis
 
         private
 
-        def configure_blueprint
-          BlueprintClient.configure do |config|
-            config.scheme = base_uri[/https?/]
-            config.host = base_uri
-            config.access_token = token
-          end
-        end
-
         def build(data, namespace)
           new(id: data.id, type: data.type, namespace: namespace,
               attributes: data.attributes)
