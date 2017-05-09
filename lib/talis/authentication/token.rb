@@ -104,10 +104,7 @@ module Talis
       def fetch_token(request_id)
         token_url = "/oauth/tokens/#{@jwt}"
         headers = { headers: { 'X-Request-Id' => request_id } }
-        token = self.class.handle_response(self.class.get(token_url, headers))
-        # Persona returns scopes as a space-separated string
-        token['scopes'] = token['scope'].split ' '
-        token
+        self.class.handle_response(self.class.get(token_url, headers))
       end
 
       class << self

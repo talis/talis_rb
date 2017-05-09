@@ -273,13 +273,13 @@ describe Talis::Authentication::Token do
         public_key: public_key
       }
       scopes = random_scopes
-      required_scope = scopes.split(' ').first
+      required_scope = scopes.first
 
       token = Talis::Authentication::Token.new(options)
 
       fake_token_body = {
         expires: payload[:exp],
-        scope: scopes,
+        scopes: scopes,
         access_token: token
       }.to_json
       fake_response = {
@@ -302,7 +302,7 @@ describe Talis::Authentication::Token do
         public_key: public_key
       }
       scopes = random_scopes
-      required_scope = { scopes: [scopes.split(' ').first] }
+      required_scope = { scopes: [scopes.first] }
 
       token = Talis::Authentication::Token.new(options)
 
@@ -323,7 +323,7 @@ describe Talis::Authentication::Token do
         public_key: public_key
       }
       scopes = random_scopes
-      required_scope = scopes.split(' ').first
+      required_scope = scopes.first
 
       token = Talis::Authentication::Token.new(options)
 
@@ -344,6 +344,6 @@ describe Talis::Authentication::Token do
   end
 
   def random_scopes(n = 26)
-    (0..n).map { ('a'..'z').to_a.sample(5).join }.join(' ')
+    (0..n).map { ('a'..'z').to_a.sample(5).join }
   end
 end
