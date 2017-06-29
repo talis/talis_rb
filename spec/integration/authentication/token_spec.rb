@@ -56,11 +56,12 @@ describe Talis::Authentication::Token do
       expect { generate_token(options) }.to raise_error expected_error
     end
 
-    it 'caches tokens securely' do
-      digest = OpenSSL::Digest.new('sha256')
-      host_client_id = Talis::Authentication::Token.base_uri + client_id
-      cache_key = OpenSSL::HMAC.hexdigest(digest, host_client_id,
-                                          client_secret)
+    it 'caches tokens correctly' do
+      host = Talis::Authentication::Token.base_uri
+      md4 = OpenSSL::Digest::MD4.new
+      hashed_client_id = Base64.encode64(md4.digest(client_id))
+      hashed_host = Base64.encode64(md4.digest(host))
+      cache_key = "token:#{hashed_client_id}_#{hashed_host}"
 
       expect(cache_store.fetch(cache_key)).to be_nil
 
@@ -78,7 +79,12 @@ describe Talis::Authentication::Token do
 
   context 'caching public keys' do
     it 'uses the cache to retrieve the key when it is present' do
-      expect(cache_store.fetch('public_key')).to be_nil
+      host = Talis::Authentication::Token.base_uri
+      md4 = OpenSSL::Digest::MD4.new
+      hashed_host = Base64.encode64(md4.digest(host))
+      cache_key = "public_key:#{hashed_host}"
+
+      expect(cache_store.fetch(cache_key)).to be_nil
 
       generated_token = generate_token
       token = Talis::Authentication::Token.new(jwt: generated_token.to_s)
@@ -88,7 +94,7 @@ describe Talis::Authentication::Token do
       expect(token.validate).to be_nil
 
       # Now the cache should be warm.
-      expect(cache_store.fetch('public_key')).not_to be_nil
+      expect(cache_store.fetch(cache_key)).not_to be_nil
 
       # Now validate again, the cache should be used, not a remote request.
       expect(token.validate).to be_nil

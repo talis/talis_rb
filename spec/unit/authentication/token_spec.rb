@@ -4,11 +4,15 @@ require_relative '../spec_helper'
 
 describe Talis::Authentication::Token do
   let(:private_key) { OpenSSL::PKey::RSA.generate 2048 }
-  let(:public_key) { private_key.public_key }
   let(:cache_store) do
     cache_store = ActiveSupport::Cache::NullStore.new
     Talis::Authentication::Token.cache_store = cache_store
     cache_store
+  end
+  let(:public_key) do
+    key = Talis::Authentication::PublicKey.new(cache_store)
+    allow(key).to receive(:fetch).and_return private_key.public_key
+    key
   end
 
   before do
@@ -167,6 +171,8 @@ describe Talis::Authentication::Token do
     end
 
     it 'returns key error when the public key is invalid' do
+      allow(public_key).to receive(:fetch).and_return 'invalid'
+
       payload = {
         exp: Time.now.to_i + 60,
         scopes: ['abc123']
@@ -174,7 +180,7 @@ describe Talis::Authentication::Token do
       jwt = JWT.encode(payload, private_key, 'RS256')
       options = {
         jwt: jwt,
-        public_key: 'invalid'
+        public_key: public_key
       }
 
       token = Talis::Authentication::Token.new(options)

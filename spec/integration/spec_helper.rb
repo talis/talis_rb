@@ -4,6 +4,7 @@ Dotenv.load
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'talis'
 require 'webmock/rspec'
+require 'rspec/wait'
 
 WebMock.allow_net_connect!
 
@@ -41,6 +42,10 @@ end
 
 def metatron_client_secret
   ENV.fetch('METATRON_OAUTH_SECRET', client_secret)
+end
+
+def babel_base_uri
+  ENV.fetch('BABEL_TEST_HOST', Talis::BABEL_HOST)
 end
 
 RSpec.configure do |config|

@@ -20,9 +20,10 @@ module Talis
 
       # Create a new token object from an existing JWT.
       # @param jwt [String] the encoded JWT.
+      # @param public_key [PublicKey] (nil) Only used in unit tests.
       def initialize(jwt:, public_key: nil)
         @jwt = jwt
-        @test_public_key = public_key
+        @public_key = public_key || PublicKey.new(Token.cache_store)
       end
 
       # Validate the token, optionally against one or more required scopes.
@@ -69,16 +70,7 @@ module Talis
       private
 
       def p_key(req_id)
-        # This should only ever return when being run in unit tests
-        return @test_public_key if @test_public_key.present?
-        cache_options = { expires_in: 7.minutes,
-                          race_condition_ttl: 10.seconds }
-        public_key = Token.cache_store.fetch('public_key', cache_options) do
-          options = { format: :plain, headers: { 'X-Request-Id' => req_id } }
-          response = self.class.get('/oauth/keys', options)
-          self.class.handle_response(response)
-        end
-        OpenSSL::PKey.read(public_key)
+        @public_key.fetch(request_id: req_id)
       end
 
       def validate_scopes(request_id, wanted_scopes, token, all_must_match)
@@ -123,11 +115,11 @@ module Talis
         # @raise [Talis::ServerCommunicationError] for network issues.
         def generate(request_id: new_req_id, client_id:, client_secret:,
                      host: base_uri)
-          token = cached_token(client_id, client_secret, host)
-          if token.nil?
-            generate_remote_token(request_id, client_id, client_secret, host)
-          else
+          token = cached_token(client_id, host)
+          if token
             new(jwt: token)
+          else
+            generate_remote_token(request_id, client_id, client_secret, host)
           end
         end
 
@@ -136,26 +128,30 @@ module Talis
         def generate_remote_token(request_id, client_id, client_secret, host)
           response = create_token(request_id, client_id, client_secret, host)
           parsed_response = handle_response(response)
-          cache_token(parsed_response, client_id, client_secret, host)
+          cache_token(parsed_response, client_id, host)
           new(jwt: parsed_response['access_token'])
         end
 
-        def digest_data(data, secret)
-          digest = OpenSSL::Digest.new('sha256')
-          OpenSSL::HMAC.hexdigest(digest, data, secret)
+        def digest_data(data)
+          md4 = OpenSSL::Digest::MD4.new
+          Base64.encode64(md4.digest(data))
         end
 
-        def cache_token(data, client_id, client_secret, host)
+        def cache_key(client_id, host)
+          "token:#{digest_data(client_id)}_#{digest_data(host)}"
+        end
+
+        def cache_token(data, client_id, host)
           access_token = data['access_token']
           # Expire the cache slightly before the token expires to cater for
           # communication delay between server issuing and client receiving.
           expiry_time = data['expires_in'].to_i - 5.seconds
-          Token.cache_store.write(digest_data(host + client_id, client_secret),
-                                  access_token, expires_in: expiry_time)
+          Token.cache_store.write(cache_key(client_id, host), access_token,
+                                  expires_in: expiry_time)
         end
 
-        def cached_token(client_id, client_secret, host)
-          key = digest_data(host + client_id, client_secret)
+        def cached_token(client_id, host)
+          key = cache_key(client_id, host)
           Token.cache_store.fetch(key) if Token.cache_store.exist?(key)
         end
 

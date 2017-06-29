@@ -1,4 +1,5 @@
 require_relative 'authentication/client'
+require_relative 'authentication/public_key'
 require_relative 'authentication/token'
 require_relative 'authentication/login'
 
