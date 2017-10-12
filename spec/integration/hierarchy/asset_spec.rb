@@ -291,7 +291,7 @@ describe Talis::Hierarchy::Asset do
       assets = Talis::Hierarchy::Asset.find_by_node(namespace: namespace,
                                                     type: 'modules',
                                                     id: 'xyz')
-      asset = assets.last
+      asset = assets.first
 
       expect(assets.size).to eq 5
       expect(asset).to be_an_instance_of Talis::Hierarchy::Asset
@@ -403,7 +403,7 @@ describe Talis::Hierarchy::Asset do
                                                     opts: opts)
       asset = assets.first
 
-      expect(asset.id).to eq '123'
+      expect(asset.id).to eq '789'
       expect(asset.type).to eq 'digitisations'
     end
 

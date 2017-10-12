@@ -24,8 +24,9 @@ describe Talis::Bibliography::EBook do
       expect(ebook.author).to eq 'Nick Wilton'
       expect(ebook.format).to eq 'ePub'
       expect(ebook.digital_list_price).to eq '58.00'
-      expect(ebook.publisher_list_price).to eq '0.00'
+      expect(ebook.publisher_list_price).to eq '73.00'
       expect(ebook.store_price).to eq '33.99'
+      expect(ebook.edition).to eq '3'
     end
 
     it 'can accept an NBD prefix' do
